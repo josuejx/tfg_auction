@@ -52,37 +52,37 @@ class AuctiOnDrawer extends StatelessWidget {
                     color: Colors.black26,
                     shape: BoxShape.circle,
                   ),
-                  child: Image.network(
-                      'https://www.freeiconspng.com/thumbs/profile-icon-png/am-a-19-year-old-multimedia-artist-student-from-manila--21.png'),
+                  //child: Image.network(
+                  //    'https://www.freeiconspng.com/thumbs/profile-icon-png/am-a-19-year-old-multimedia-artist-student-from-manila--21.png'),
                 ),
                 ListTile(
                   onTap: () {},
-                  leading: Icon(Icons.home),
-                  title: Text('Inicio'),
+                  leading: const Icon(Icons.home),
+                  title: const Text('Inicio'),
                 ),
                 ListTile(
                   onTap: () {},
-                  leading: Icon(Icons.account_circle_rounded),
-                  title: Text('Perfil'),
+                  leading: const Icon(Icons.account_circle_rounded),
+                  title: const Text('Perfil'),
                 ),
                 ListTile(
                   onTap: () {},
-                  leading: Icon(Icons.add),
-                  title: Text('Crear subasta'),
+                  leading: const Icon(Icons.add),
+                  title: const Text('Crear subasta'),
                 ),
                 ListTile(
                   onTap: () {},
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings'),
                 ),
-                Spacer(),
+                const Spacer(),
                 ListTile(
                   onTap: () {},
-                  leading: Icon(Icons.logout),
-                  title: Text('Cerrar sesión'),
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Cerrar sesión'),
                 ),
                 DefaultTextStyle(
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: Colors.white54,
                   ),
@@ -90,7 +90,7 @@ class AuctiOnDrawer extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: const Text('Terms of Service | Privacy Policy'),
                   ),
                 ),
               ],

@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tfg_auction/controllers/home_controller.dart';
+import 'package:tfg_auction/screens/home_screens_content/bid_content.dart';
 import 'package:tfg_auction/widgets/layout/auction_appbar.dart';
 import 'package:tfg_auction/widgets/layout/auction_drawer.dart';
 import 'package:tfg_auction/widgets/layout/bottom_bar.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+import 'home_screens_content/category_content.dart';
+import 'home_screens_content/home_content.dart';
+import 'home_screens_content/saved_content.dart';
+
+class HomeScreen extends GetView<HomeController> {
+  HomeScreen({Key? key}) : super(key: key);
+
+  HomeController homeController = Get.put(HomeController());
+
+  final _screens = [
+    const HomeContent(),
+    const CategoryContent(),
+    const BidContent(),
+    const SavedContent(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +28,7 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
         appBar: const AuctiOnAppBar(),
         bottomNavigationBar: AuctiOnBottomBar(),
-        body: const Center(
-          child: Text('HomeScreen'),
-        ),
+        body: Obx(() => _screens[controller.selectedIndex]),
       ),
     );
   }

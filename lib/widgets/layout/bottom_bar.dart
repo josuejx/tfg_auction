@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tfg_auction/controllers/home_controller.dart';
+import 'package:tfg_auction/screens/home_screen.dart';
 
 class AuctiOnBottomBar extends StatefulWidget {
   @override
@@ -37,6 +40,7 @@ class _AuctiOnBottomBarState extends State<AuctiOnBottomBar> {
       onTap: (index) {
         setState(() {
           _selectedIndex = index;
+          Get.find<HomeController>().selectedIndex = index;
         });
       },
     );
