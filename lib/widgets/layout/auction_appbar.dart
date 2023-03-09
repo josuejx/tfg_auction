@@ -8,7 +8,13 @@ class AuctiOnAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('AuctiOn'),
+      title: Hero(
+        tag: 'logo',
+        child: Image.asset(
+          'assets/logo_fondo.png',
+          height: 20,
+        ),
+      ),
       centerTitle: true,
       leading: IconButton(
         onPressed: () {

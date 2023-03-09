@@ -19,23 +19,25 @@ class CategoryContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: MediaQuery.of(context).size.width / 300 > 2
-          ? (MediaQuery.of(context).size.width ~/ 300 > 5
-              ? 5
-              : MediaQuery.of(context).size.width ~/ 300)
-          : 2,
-      crossAxisSpacing: 20,
-      mainAxisSpacing: 20,
-      padding: const EdgeInsets.all(40),
-      shrinkWrap: true,
-      children: [
-        ..._generateCategoriaList().map(
-          (categoria) => CategoryCard(
-            categoria: categoria,
+    return SingleChildScrollView(
+      child: GridView.count(
+        crossAxisCount: MediaQuery.of(context).size.width / 300 > 2
+            ? (MediaQuery.of(context).size.width ~/ 300 > 5
+                ? 5
+                : MediaQuery.of(context).size.width ~/ 300)
+            : 2,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        padding: const EdgeInsets.all(40),
+        shrinkWrap: true,
+        children: [
+          ..._generateCategoriaList().map(
+            (categoria) => CategoryCard(
+              categoria: categoria,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
