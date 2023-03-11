@@ -1,6 +1,5 @@
 RewriteEngine On
-# if receive /auction/ redirect to /auction/api_rest.php
-RewriteCond %{REQUEST_URI} ^/auction/ [NC]
-RewriteRule ^(.*)$ /auction/api_rest.php [L]
-RewriteCond %{REQUEST_URI} ^/auction/(.*)$ [NC]
-RewriteRule ^(.*)$ /auction/api_rest.php?%{QUERY_STRING} [L]
+RewriteBase "/auction/"
+RewriteRule ^([a-zA-Z0-9_-]*)$ index.php?action=$1&%{QUERY_STRING}
+RewriteRule ^([a-zA-Z0-9_-]*)/([a-zA-Z0-9_-]*)$ index.php?action=$1&value=$2&%{QUERY_STRING} [L,QSA]
+RewriteRule ^([a-zA-Z0-9_-]*)/([a-zA-Z0-9_-]*)/([a-zA-Z0-9_-]*) index.php?action=$1&field=$2&value=$3&%{QUERY_STRING} [L,QSA]
