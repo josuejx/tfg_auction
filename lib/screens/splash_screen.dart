@@ -23,13 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
         _loading = false;
       });
       Future.delayed(const Duration(seconds: 1), () {
-        Session().getSession().then((usuario) {
-          if (usuario != null) {
-            Get.offAll(() => HomeScreen());
-          } else {
-            Get.offAll(() => LoginScreen());
-          }
-        });
+        Get.offAll(() => HomeScreen());
       });
     });
   }
@@ -45,8 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
               )
             : Hero(
                 tag: 'logo',
-                child: ZoomIn(
-                    child: Image.asset('assets/logo_fondo.png', height: 70))),
+                child: Image.asset('assets/logo_fondo.png', height: 70)),
       ),
     );
   }

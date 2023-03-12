@@ -18,7 +18,7 @@ class Usuario {
         nombreUsuario: json["nombreUsuario"],
         nombreCompleto: json["nombreCompleto"],
         email: json["email"],
-        password: json["password"],
+        password: json["passwd"].toString(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -26,6 +26,11 @@ class Usuario {
         "nombreUsuario": nombreUsuario,
         "nombreCompleto": nombreCompleto,
         "email": email,
-        "password": password,
+        "passwd": password,
       };
+
+  @override
+  String toString() {
+    return 'Usuario{id: $id, nombreUsuario: $nombreUsuario, nombreCompleto: $nombreCompleto, email: $email, password: $password}';
+  }
 }

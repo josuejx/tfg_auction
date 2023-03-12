@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tfg_auction/models/usuario.dart';
+import 'package:tfg_auction/screens/home_screen.dart';
+import 'package:tfg_auction/session.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -9,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _hidePassword = true;
+  bool _loading = false;
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -53,7 +58,40 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  if (_emailController.text.isEmpty ||
+                      _passwordController.text.isEmpty) {
+                    Get.snackbar('Error', 'Rellena todos los campos',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white);
+                    return;
+                  }
+
+                  setState(() {
+                    _loading = true;
+                  });
+                  bool test = await Session()
+                      .login(_emailController.text, _passwordController.text);
+                  if (test) {
+                    Usuario? usuario = await Session().getSession();
+                    Get.snackbar('Login',
+                        'Bienvenido de nuevo ${usuario!.nombreUsuario}',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white);
+                    Get.offAll(() => HomeScreen());
+                  } else {
+                    setState(() {
+                      _loading = false;
+                    });
+                    Get.snackbar('Login',
+                        'Error al iniciar sesión. Comprueba tus credenciales.',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white);
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   fixedSize: Size(
                       MediaQuery.of(context).size.width * 0.2 > 120
@@ -61,7 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           : 120,
                       40),
                 ),
-                child: const Text('Iniciar Sesión'),
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : const Text('Iniciar Sesión'),
               ),
               const SizedBox(height: 30),
               TextButton(

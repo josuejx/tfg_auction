@@ -6,13 +6,19 @@ import 'package:tfg_auction/db/env.dart';
 import 'package:tfg_auction/models/usuario.dart';
 
 class Session {
-  Future<bool> login(String email) async {
+  Future<bool> login(String email, String passwd) async {
     try {
       final response =
           await http.get(Uri.parse("${Env.base_url}/usuario/email/$email"));
 
       if (response.statusCode == 200) {
-        return true;
+        final usuario = Usuario.fromJson(jsonDecode(response.body)[0]);
+        if (usuario.password == passwd) {
+          setSession(usuario);
+          return true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
@@ -39,5 +45,11 @@ class Session {
     } catch (e) {
       return null;
     }
+  }
+
+  void logout() {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.remove('usuario');
+    });
   }
 }

@@ -94,27 +94,31 @@
 	}
 
 	/* Mostrar fichero introducido en el segundo parámetro */
-	function mostrarFichero() {
+	function mostrarImagen() {
 		$showError = false;
 
 		global $params;
 		$nombreFichero=$params["value"];
-		$tipo="application/pdf";
 		$primerCaracter = substr($nombreFichero, 0, 1);
 
-		$ruta="../akventas/";
-		if ($primerCaracter=="A") {
-			$ruta=$ruta."albaranes/";
-		} else if ($primerCaracter=="F") {
-			$ruta=$ruta."facturas/";
+		// Quitar el primer caracter del nombre del fichero
+		$nombreFichero = substr($nombreFichero, 1);
+
+		$ruta="../auction/images/";
+		if ($primerCaracter=="U") {
+			$ruta=$ruta."usuarios/";
+		} else if ($primerCaracter=="P") {
+			$ruta=$ruta."productos/";
 		} else {
 			$showError = true;
 		}
 
 		if (!$showError) {
-			$nombreFichero=$ruta.$nombreFichero.".pdf";
+			$nombreFichero = glob($ruta.$nombreFichero.".*")[0];
+			$tipo = mime_content_type($nombreFichero);
+
 			if (file_exists($nombreFichero)) {
-				header('Content-Type: '.$tipo);
+				header('Content-Type: '. $tipo);
 				header('Content-Disposition: inline; filename="'.$nombreFichero.'"');
 				header('Content-Length: ' . filesize($nombreFichero));
 				readfile($nombreFichero);

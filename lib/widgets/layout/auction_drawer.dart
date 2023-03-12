@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'package:tfg_auction/global.dart';
+import 'package:get/get.dart';
+import 'package:tfg_auction/db/env.dart';
+import 'package:tfg_auction/models/usuario.dart';
+import 'package:tfg_auction/screens/login_screen.dart';
+import 'package:tfg_auction/screens/register_screen.dart';
+import 'package:tfg_auction/session.dart';
 
-class AuctiOnDrawer extends StatelessWidget {
+class AuctiOnDrawer extends StatefulWidget {
   final Widget child;
+  static AdvancedDrawerController drawerController = AdvancedDrawerController();
 
   const AuctiOnDrawer({
     Key? key,
@@ -11,10 +17,32 @@ class AuctiOnDrawer extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<AuctiOnDrawer> createState() => _AuctiOnDrawerState();
+}
+
+class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
+  bool _isLogged = false;
+  Usuario? _usuario;
+
+  @override
+  void initState() {
+    super.initState();
+    AuctiOnDrawer.drawerController = AdvancedDrawerController();
+    Session().getSession().then((Usuario? usuario) {
+      if (usuario != null) {
+        setState(() {
+          _isLogged = true;
+          _usuario = usuario;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AdvancedDrawer(
       backdropColor: Colors.blue,
-      controller: Globals.advancedDrawerController,
+      controller: AuctiOnDrawer.drawerController,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
       animateChildDecoration: true,
@@ -52,35 +80,24 @@ class AuctiOnDrawer extends StatelessWidget {
                     color: Colors.black26,
                     shape: BoxShape.circle,
                   ),
-                  //child: Image.network(
-                  //    'https://www.freeiconspng.com/thumbs/profile-icon-png/am-a-19-year-old-multimedia-artist-student-from-manila--21.png'),
+                  child: _isLogged
+                      ? Image.network('${Env.base_url}/image/U${_usuario!.id}')
+                      : const Icon(Icons.account_circle_rounded,
+                          color: Colors.white, size: 128.0),
                 ),
-                ListTile(
-                  onTap: () {},
-                  leading: const Icon(Icons.home),
-                  title: const Text('Inicio'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: const Icon(Icons.account_circle_rounded),
-                  title: const Text('Perfil'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: const Icon(Icons.add),
-                  title: const Text('Crear subasta'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
-                ),
+                if (_isLogged) ...menuConSesionIniciada(),
+                if (!_isLogged) ...menuSinSesion(),
                 const Spacer(),
-                ListTile(
-                  onTap: () {},
-                  leading: const Icon(Icons.logout),
-                  title: const Text('Cerrar sesión'),
-                ),
+                if (_isLogged)
+                  ListTile(
+                    onTap: () {
+                      Session().logout();
+                      AuctiOnDrawer.drawerController.hideDrawer();
+                      Get.offAllNamed('/home');
+                    },
+                    leading: const Icon(Icons.logout),
+                    title: const Text('Cerrar sesión'),
+                  ),
                 DefaultTextStyle(
                   style: const TextStyle(
                     fontSize: 12,
@@ -98,7 +115,60 @@ class AuctiOnDrawer extends StatelessWidget {
           ),
         ),
       ),
-      child: child,
+      child: widget.child,
     );
+  }
+
+  List<Widget> menuConSesionIniciada() {
+    return [
+      ListTile(
+        onTap: () {},
+        leading: const Icon(Icons.home),
+        title: const Text('Inicio'),
+      ),
+      ListTile(
+        onTap: () {},
+        leading: const Icon(Icons.account_circle_rounded),
+        title: const Text('Perfil'),
+      ),
+      ListTile(
+        onTap: () {},
+        leading: const Icon(Icons.add),
+        title: const Text('Crear subasta'),
+      ),
+      ListTile(
+        onTap: () {},
+        leading: const Icon(Icons.settings),
+        title: const Text('Settings'),
+      ),
+    ];
+  }
+
+  List<Widget> menuSinSesion() {
+    return [
+      ListTile(
+        onTap: () {},
+        leading: const Icon(Icons.home),
+        title: const Text('Inicio'),
+      ),
+      ListTile(
+        onTap: () {
+          Get.to(() => LoginScreen(), transition: Transition.cupertino);
+        },
+        leading: const Icon(Icons.login),
+        title: const Text('Iniciar sesión'),
+      ),
+      ListTile(
+          onTap: () {
+            Get.to(() => RegisterScreen(), transition: Transition.cupertino);
+          },
+          leading: const Icon(Icons.account_circle_sharp),
+          title: const Text('Registrarse')),
+      ListTile(
+        onTap: () {},
+        leading: const Icon(Icons.settings),
+        title: const Text('Settings'),
+      ),
+    ];
   }
 }

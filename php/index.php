@@ -21,7 +21,7 @@
 	$mostrarData=false;
 	$mostrarManual=false;
 	$mostrarLogin=false;
-	$mostrarFichero=false;
+	$mostrarImagen=false;
 	if (isset($params['action'])) {
 		if ($params['action']=='datos') {
 			$mostrarData=true;
@@ -29,8 +29,8 @@
 		if ($params['action']=='login') {
 			$mostrarLogin=true;
 		}
-		if ($params['action']=='fichero') {
-			$mostrarFichero=true;
+		if ($params['action']=='image') {
+			$mostrarImagen=true;
 		}
 		if ($params['action']=='') {
 			$mostrarManual=true;
@@ -127,8 +127,8 @@
 				mostrarLogin();
 			}
 
-			if ($mostrarFichero) {
-				mostrarFichero();
+			if ($mostrarImagen) {
+				mostrarImagen();
 				return;
 			}
 			
