@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
@@ -77,15 +78,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               color: Colors.black26,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.account_circle_rounded,
-                color: Colors.white, size: 128.0),
+            child: _image.path == ''
+                ? const Icon(Icons.account_circle_rounded,
+                    color: Colors.white, size: 128.0)
+                : Image.file(_image),
           ),
           Positioned(
             bottom: 0,
             right: 0,
             child: InkWell(
-              onTap: () {
-                _image = File('');
+              onTap: () async {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  allowedExtensions: ['jpg', 'png', 'jpeg'],
+                );
+                if (result != null) {
+                  setState(() {
+                    _image = File(result.files.single.path!);
+                  });
+                }
               },
               child: Container(
                 width: 48.0,
@@ -198,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               email: _emailController.text,
               password: _passwordController.text);
 
-          String test = await DBUsuario().create(usuario);
+          String test = await DBUsuario().create(usuario, _image);
           if (test == "") {
             Get.snackbar("Registro completado",
                 "Usuario creado correctamente, ya puede iniciar sesión",

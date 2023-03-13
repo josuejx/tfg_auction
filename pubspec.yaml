@@ -40,6 +40,7 @@ dependencies:
   http: ^0.13.3
   shared_preferences: ^2.0.18
   ftpconnect: ^2.0.5
+  file_picker: ^5.2.6
   
 dev_dependencies:
 

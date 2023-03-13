@@ -39,17 +39,26 @@ class DBUsuario {
     }
   }
 
-  Future<String> create(Usuario usuario) async {
+  Future<String> create(Usuario usuario, File image) async {
     try {
+      usuario.id = 0;
+      print(jsonEncode(usuario.toJson()));
       final response = await http.post(
         Uri.parse("${Env.base_url}/usuario"),
         headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+          'Content-Type': 'application/json',
+          'Connection': 'keep-alive',
+          'Accept': '*/*',
+          'Accept-Encoding': 'gzip, deflate, br',
         },
         body: jsonEncode(usuario.toJson()),
       );
 
+      print(response.body);
+
       if (response.statusCode == 200) {
+        usuario = Usuario.fromJson(json.decode(response.body));
+        uploadImage(image, usuario.id!);
         return "";
       } else if (response.statusCode == 400) {
         return "Compruebe que el email que está intentando registrar no está ya en uso";
@@ -57,6 +66,7 @@ class DBUsuario {
         return "Error de conexión con el servidor";
       }
     } catch (e) {
+      print(e);
       return "Error de conexión con el servidor";
     }
   }
@@ -102,9 +112,13 @@ class DBUsuario {
     String fileName = file.path.split('/').last;
     String extension = fileName.split('.').last;
     await ftpConnect.connect();
-    bool res = await ftpConnect.uploadFileWithRetry(file, pRetryCount: 2);
-    res = await ftpConnect.rename(fileName, '$idUsuario.$extension');
+    bool dirChange =
+        await ftpConnect.changeDirectory('public_html/auction/images/usuarios');
+    if (dirChange) {
+      bool res = await ftpConnect.uploadFileWithRetry(file, pRetryCount: 2);
+      res = await ftpConnect.rename(fileName, '$idUsuario.$extension');
+      print(res);
+    }
     await ftpConnect.disconnect();
-    print(res);
   }
 }
