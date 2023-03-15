@@ -29,7 +29,27 @@ class DBPuja {
       final response = await http
           .get(Uri.parse("${Env.base_url}/puja/idUsuario/$idUsuario"));
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        List<Puja> pujas = [];
+        for (var item in json.decode(response.body)) {
+          pujas.add(Puja.fromJson(item));
+        }
+        return pujas;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
+  Future<List<Puja>> readAllByProduct(int idProducto) async {
+    try {
+      final response = await http
+          .get(Uri.parse("${Env.base_url}/puja/idProducto/$idProducto"));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
         List<Puja> pujas = [];
         for (var item in json.decode(response.body)) {
           pujas.add(Puja.fromJson(item));

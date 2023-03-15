@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/db/db_puja.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/puja.dart';
 import 'package:tfg_auction/models/usuario.dart';
+import 'package:tfg_auction/screens/product_screen.dart';
 
 class BidCard extends StatefulWidget {
   Puja puja;
@@ -17,6 +21,10 @@ class BidCard extends StatefulWidget {
 
 class _BidCardState extends State<BidCard> {
   Producto producto = Producto();
+  List<Puja> pujas = [];
+  List<Usuario> usuarios = [];
+
+  bool expanded = false;
 
   @override
   void initState() {
@@ -26,29 +34,96 @@ class _BidCardState extends State<BidCard> {
 
   void cargarDatos() async {
     DBProducto dbProducto = DBProducto();
-    // Obtener producto
     producto = await dbProducto.read(widget.puja.idProducto!);
+    DBPuja dbPuja = DBPuja();
+    pujas = await dbPuja.readAllByProduct(widget.puja.idProducto!);
+    DBUsuario dbUsuario = DBUsuario();
+    for (var puja in pujas) {
+      Usuario? usuario = await dbUsuario.read(puja.idUsuario!);
+      if (usuario != null) {
+        usuarios.add(usuario);
+      }
+    }
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: producto.id == null
-          ? const ListTile(
-              title: Text("Cargando..."),
-              trailing: CircularProgressIndicator(),
-            )
-          : ListTile(
-              leading: Image.network(
-                DBProducto().getImagen(producto.id!),
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              ),
-              title: Text(producto.nombre!),
-              subtitle: Text("Puja: ${widget.puja.cantidad}"),
-            ),
-    );
+        child: producto.id == null
+            ? const ListTile(
+                title: Text("Cargando..."),
+                trailing: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            expanded = !expanded;
+                          });
+                        },
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        icon: expanded
+                            ? const Icon(Icons.expand_less)
+                            : const Icon(Icons.expand_more),
+                      ),
+                      Flexible(
+                          child: InkWell(
+                        onTap: () {
+                          Get.to(() => ProductScreen(producto: producto),
+                              transition: Transition.zoom);
+                        },
+                        child: Hero(
+                          tag: 'P${producto.id.toString()}',
+                          child: Image.network(
+                            DBProducto().getImagen(producto.id!),
+                            width: 50,
+                          ),
+                        ),
+                      )),
+                      Expanded(
+                        child: ListTile(
+                          onTap: () {
+                            Get.to(() => ProductScreen(producto: producto),
+                                transition: Transition.zoom);
+                          },
+                          title: Text(producto.nombre!),
+                          subtitle: Text("Inicial: ${producto.precio}€"),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListTile(
+                          title: Text("Pujas: ${pujas.length}"),
+                          trailing:
+                              Text("Última puja: ${pujas.last.cantidad}€"),
+                        ),
+                      ),
+                      if (usuarios.last.id != null &&
+                          producto.finalizacion!.isBefore(DateTime.now()))
+                        Expanded(
+                          child: ListTile(
+                            title: const Text("Ganador de la puja:"),
+                            subtitle: Text(usuarios.last.nombreUsuario!),
+                          ),
+                        ),
+                    ],
+                  ),
+                  if (expanded) const Divider(),
+                  if (expanded)
+                    Wrap(
+                      children: [
+                        for (int i = 0; i < pujas.length; i++)
+                          ListTile(
+                            title: Text(usuarios[i].nombreUsuario.toString()),
+                            subtitle: Text(pujas[i].fecha.toString()),
+                            trailing: Text('${pujas[i].cantidad.toString()}€'),
+                          ),
+                      ],
+                    )
+                ],
+              ));
   }
 }
