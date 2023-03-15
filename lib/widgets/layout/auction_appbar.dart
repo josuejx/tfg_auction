@@ -12,7 +12,7 @@ class AuctiOnAppBar extends StatelessWidget implements PreferredSizeWidget {
         tag: 'logo',
         child: Image.asset(
           'assets/logo_fondo.png',
-          height: 20,
+          height: 40,
         ),
       ),
       centerTitle: true,

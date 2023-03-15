@@ -16,7 +16,7 @@ class HomeScreen extends GetView<HomeController> {
   HomeController homeController = Get.put(HomeController());
 
   final _screens = [
-    const HomeContent(),
+    HomeContent(),
     const CategoryContent(),
     const BidContent(),
     const SavedContent(),

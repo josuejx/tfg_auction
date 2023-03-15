@@ -34,32 +34,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Get.offAll(() => LoginScreen());
-          },
-        ),
-        elevation: 0,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Hero(
+        appBar: AppBar(
+          title: Hero(
               tag: 'logo',
               child: Image.asset('assets/logo_fondo.png', height: 40)),
-          Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.1 > 30
-                      ? MediaQuery.of(context).size.width * 0.1
-                      : 30),
-              child: Column(
-                children: [...registerFormWidgets()],
-              ))
-        ],
-      ),
-    );
+          elevation: 0,
+          centerTitle: true,
+        ),
+        body: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.1 > 30
+                    ? MediaQuery.of(context).size.width * 0.1
+                    : 30),
+            child: Column(
+              children: [...registerFormWidgets()],
+            )));
   }
 
   List<Widget> registerFormWidgets() {
@@ -224,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       const SizedBox(height: 10),
       TextButton(
         onPressed: () {
-          Get.off(() => LoginScreen());
+          Get.to(() => LoginScreen());
         },
         child: const Text('¿Ya tienes cuenta?'),
       ),

@@ -123,11 +123,6 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
     return [
       ListTile(
         onTap: () {},
-        leading: const Icon(Icons.home),
-        title: const Text('Inicio'),
-      ),
-      ListTile(
-        onTap: () {},
         leading: const Icon(Icons.account_circle_rounded),
         title: const Text('Perfil'),
       ),
@@ -146,11 +141,6 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
 
   List<Widget> menuSinSesion() {
     return [
-      ListTile(
-        onTap: () {},
-        leading: const Icon(Icons.home),
-        title: const Text('Inicio'),
-      ),
       ListTile(
         onTap: () {
           Get.to(() => LoginScreen(), transition: Transition.cupertino);

@@ -39,9 +39,9 @@ dependencies:
   animate_do: ^3.0.2
   http: ^0.13.3
   shared_preferences: ^2.0.18
-  ftpconnect: ^2.0.5
   file_picker: ^5.2.6
-  
+  ssh2: ^2.2.3
+  cupertino_modal_sheet: ^1.0.0
 dev_dependencies:
 
   # The "flutter_lints" package below contains a set of recommended lints to

@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/widgets/category_card.dart';
 
-class CategoryContent extends StatelessWidget {
+class CategoryContent extends StatefulWidget {
   const CategoryContent({Key? key}) : super(key: key);
 
-  List<Categoria> _generateCategoriaList() {
-    List<Categoria> list = [];
-    for (int i = 0; i < 10; i++) {
-      list.add(Categoria(
-        id: i,
-        nombre: 'Categoria $i',
-        imagen: 'https://picsum.photos/300/300',
-      ));
-    }
-    return list;
+  @override
+  State<CategoryContent> createState() => _CategoryContentState();
+}
+
+class _CategoryContentState extends State<CategoryContent> {
+  List<Categoria> categorias = [];
+
+  @override
+  void initState() {
+    cargarDatos();
+    super.initState();
+  }
+
+  void cargarDatos() async {
+    final listaCategorias = await DBCategoria().readAll();
+    setState(() {
+      categorias = listaCategorias;
+    });
   }
 
   @override
@@ -31,7 +40,7 @@ class CategoryContent extends StatelessWidget {
         padding: const EdgeInsets.all(40),
         shrinkWrap: true,
         children: [
-          ..._generateCategoriaList().map(
+          ...categorias.map(
             (categoria) => CategoryCard(
               categoria: categoria,
             ),

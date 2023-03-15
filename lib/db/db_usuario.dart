@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:ftpconnect/ftpconnect.dart';
+import 'package:get/get.dart';
+import 'package:ssh2/ssh2.dart';
 import 'package:tfg_auction/db/env.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +12,7 @@ class DBUsuario {
     try {
       final response = await http.get(Uri.parse("${Env.base_url}/usuario"));
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         List<Usuario> usuarios = [];
         for (var item in json.decode(response.body)) {
           usuarios.add(Usuario.fromJson(item));
@@ -27,10 +28,11 @@ class DBUsuario {
 
   Future<Usuario?> read(int id) async {
     try {
-      final response = await http.get(Uri.parse("${Env.base_url}/usuario/$id"));
+      final response =
+          await http.get(Uri.parse("${Env.base_url}/usuario/id/$id"));
 
-      if (response.statusCode == 200) {
-        return Usuario.fromJson(json.decode(response.body));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Usuario.fromJson(json.decode(response.body)[0]);
       } else {
         return null;
       }
@@ -39,26 +41,46 @@ class DBUsuario {
     }
   }
 
+  Future<Usuario?> readByEmail(String email) async {
+    try {
+      final response =
+          await http.get(Uri.parse("${Env.base_url}/usuario/email/$email"));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final usuario = Usuario.fromJson(json.decode(response.body)[0]);
+        return usuario;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
   Future<String> create(Usuario usuario, File image) async {
     try {
-      usuario.id = 0;
-      print(jsonEncode(usuario.toJson()));
-      final response = await http.post(
-        Uri.parse("${Env.base_url}/usuario"),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Connection': 'keep-alive',
-          'Accept': '*/*',
-          'Accept-Encoding': 'gzip, deflate, br',
-        },
-        body: jsonEncode(usuario.toJson()),
-      );
+      HttpClient httpClient = HttpClient();
+      HttpClientRequest request =
+          await httpClient.postUrl(Uri.parse("${Env.base_url}/usuario"));
 
-      print(response.body);
+      request.headers.set('Accept', 'application/json');
+      request.headers.set('Content-type', 'application/json');
+      request.add(utf8.encode(json.encode(usuario.toJson())));
 
-      if (response.statusCode == 200) {
-        usuario = Usuario.fromJson(json.decode(response.body));
-        uploadImage(image, usuario.id!);
+      HttpClientResponse response = await request.close();
+
+      // print body
+      String reply = await response.transform(utf8.decoder).join();
+      httpClient.close();
+      print(reply);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        //usuario = Usuario.fromJson(json.decode(response.body));
+        //if (image.path != "") {
+        //  usuario = (await readByEmail(usuario.email!))!;
+        //  await uploadImage(image, usuario.id!);
+        //}
         return "";
       } else if (response.statusCode == 400) {
         return "Compruebe que el email que está intentando registrar no está ya en uso";
@@ -107,18 +129,39 @@ class DBUsuario {
   }
 
   Future uploadImage(File file, int idUsuario) async {
-    FTPConnect ftpConnect = FTPConnect('access935918845.webspace-data.io',
-        user: 'u109671148', pass: 'JosueGarcia_0909');
-    String fileName = file.path.split('/').last;
-    String extension = fileName.split('.').last;
-    await ftpConnect.connect();
-    bool dirChange =
-        await ftpConnect.changeDirectory('public_html/auction/images/usuarios');
-    if (dirChange) {
-      bool res = await ftpConnect.uploadFileWithRetry(file, pRetryCount: 2);
-      res = await ftpConnect.rename(fileName, '$idUsuario.$extension');
-      print(res);
+    try {
+      var client = SSHClient(
+        host: "access935918845.webspace-data.io",
+        port: 22,
+        username: "u1799247386",
+        passwordOrKey: "AuctionTFG2023",
+      );
+      String fileName = '';
+      if (GetPlatform.isWindows) {
+        fileName = file.path.split('\\').last;
+      } else {
+        fileName = file.path.split('/').last;
+      }
+      String extension = fileName.split('.').last;
+      await client.connectSFTP();
+      await client.sftpUpload(
+        path: file.path,
+        toPath: "./usuarios/",
+        callback: (progress) {
+          print(progress); // read upload progress
+        },
+      );
+      await client.sftpRename(
+        oldPath: "/usuarios/$fileName",
+        newPath: "/usuarios/$idUsuario.$extension",
+      );
+      await client.disconnect();
+    } catch (e) {
+      print(e);
     }
-    await ftpConnect.disconnect();
+  }
+
+  String getImage(int idUsuario) {
+    return "${Env.base_url}/image/U${idUsuario.toString()}";
   }
 }
