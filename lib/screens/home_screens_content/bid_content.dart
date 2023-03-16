@@ -35,11 +35,11 @@ class _BidContentState extends State<BidContent> {
   @override
   Widget build(BuildContext context) {
     if (usuario == null) {
-      return Center(
+      return const Center(
         child: Text("Debes iniciar sesión para ver tus pujas"),
       );
     } else if (pujas.isEmpty) {
-      return Center(
+      return const Center(
         child: Text("No tienes pujas"),
       );
     } else {

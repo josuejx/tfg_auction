@@ -4,7 +4,6 @@ class Producto {
   String? nombre;
   String? descripcion;
   double? precio;
-  String? imagen;
   DateTime? finalizacion;
 
   // Relaciones
@@ -16,7 +15,6 @@ class Producto {
     this.nombre,
     this.descripcion,
     this.precio,
-    this.imagen,
     this.finalizacion,
   });
 
@@ -25,7 +23,6 @@ class Producto {
     nombre = json['nombre'];
     descripcion = json['descripcion'];
     precio = json['precio'];
-    imagen = json['imagen'].toString();
     finalizacion = DateTime.parse(json['finalizacion']);
     idCategoria = json['idCategoria'];
     idUsuario = json['idUsuario'];
@@ -37,7 +34,6 @@ class Producto {
     data['nombre'] = this.nombre;
     data['descripcion'] = this.descripcion;
     data['precio'] = this.precio;
-    data['imagen'] = this.imagen;
     data['finalizacion'] = this.finalizacion.toString();
     data['idCategoria'] = this.idCategoria;
     data['idUsuario'] = this.idUsuario;

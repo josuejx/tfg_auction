@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_archivado.dart';
 import 'package:tfg_auction/db/db_producto.dart';
 import 'package:tfg_auction/models/archivado.dart';
@@ -45,7 +46,7 @@ class _SavedContentState extends State<SavedContent> {
   @override
   Widget build(BuildContext context) {
     if (usuario == null) {
-      return Center(
+      return const Center(
         child: Text("Debes iniciar sesión para ver tus productos guardados"),
       );
     } else {
@@ -60,9 +61,12 @@ class _SavedContentState extends State<SavedContent> {
                         ? 5
                         : MediaQuery.of(context).size.width ~/ 300)
                     : 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                padding: const EdgeInsets.all(40),
+                crossAxisSpacing:
+                    GetPlatform.isAndroid || GetPlatform.isIOS ? 5 : 20,
+                mainAxisSpacing:
+                    GetPlatform.isAndroid || GetPlatform.isIOS ? 5 : 20,
+                padding: EdgeInsets.all(
+                    GetPlatform.isAndroid || GetPlatform.isIOS ? 10 : 40),
                 shrinkWrap: true,
                 children: [
                   ..._productos.map((e) => ProductCard(producto: e)).toList(),

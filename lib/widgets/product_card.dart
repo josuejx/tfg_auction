@@ -13,97 +13,82 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Get.to(() => ProductScreen(producto: producto),
-            transition: Transition.topLevel);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: const Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+        onTap: () {
+          Get.to(() => ProductScreen(producto: producto),
+              transition: Transition.topLevel);
+        },
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                // Imagen
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(DBProducto().getImagen(producto.id!)),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                child: Hero(
-                  tag: 'P${producto.id.toString()}',
-                  child: Image.network(
-                    dbProducto.getImagen(producto.id!),
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    producto.nombre!,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    producto.descripcion!,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    '${producto.precio!.toStringAsFixed(2)}€',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        getStatus(),
-                        style: const TextStyle(
-                          fontSize: 16,
+                const SizedBox(width: 10),
+                // Informacion
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Nombre
+                      Text(
+                        producto.nombre!,
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width / 300 > 2
+                              ? 14
+                              : 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
+                      if (!GetPlatform.isAndroid && !GetPlatform.isIOS)
+                        const SizedBox(height: 5),
+                      if (!GetPlatform.isAndroid && !GetPlatform.isIOS)
+                        Text(
+                          producto.descripcion!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      const SizedBox(height: 5),
+                      Text(
+                        '${producto.precio!.toStringAsFixed(2)} €',
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width / 300 > 2
+                              ? 14
+                              : 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // Estado
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Text(
+                          getStatus(),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   String getStatus() {

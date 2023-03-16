@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Usuario? usuario = await Session().getSession();
                   Get.snackbar(
                       'Login', 'Bienvenido de nuevo ${usuario!.nombreUsuario}',
-                      snackPosition: SnackPosition.BOTTOM,
+                      snackPosition: SnackPosition.TOP,
                       backgroundColor: Colors.green,
                       colorText: Colors.white);
                   Get.offAll(() => HomeScreen());

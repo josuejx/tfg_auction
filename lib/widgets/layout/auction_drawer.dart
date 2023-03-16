@@ -8,6 +8,7 @@ import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/db/env.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/login_screen.dart';
+import 'package:tfg_auction/screens/new_product_screen.dart';
 import 'package:tfg_auction/screens/register_screen.dart';
 import 'package:tfg_auction/session.dart';
 
@@ -77,7 +78,7 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
                   height: 128.0,
                   margin: const EdgeInsets.only(
                     top: 24.0,
-                    bottom: 64.0,
+                    bottom: 24.0,
                   ),
                   clipBehavior: Clip.antiAlias,
                   decoration: const BoxDecoration(
@@ -89,6 +90,18 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
                       : const Icon(Icons.account_circle_rounded,
                           color: Colors.white, size: 128.0),
                 ),
+                if (_isLogged)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30.0),
+                    child: Text(
+                      '¡Hola, ${_usuario!.nombreUsuario}!',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 if (_isLogged) ...menuConSesionIniciada(),
                 if (!_isLogged) ...menuSinSesion(),
                 const Spacer(),
@@ -131,7 +144,9 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
         title: const Text('Perfil'),
       ),
       ListTile(
-        onTap: () {},
+        onTap: () {
+          Get.to(() => NewProductScreen(), transition: Transition.cupertino);
+        },
         leading: const Icon(Icons.add),
         title: const Text('Crear subasta'),
       ),

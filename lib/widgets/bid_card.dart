@@ -97,7 +97,7 @@ class _BidCardState extends State<BidCard> {
                       Expanded(
                         child: ListTile(
                           title: Text("Pujas: ${pujas.length}"),
-                          trailing:
+                          subtitle:
                               Text("Última puja: ${pujas.last.cantidad}€"),
                         ),
                       ),

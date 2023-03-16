@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/widgets/category_card.dart';
@@ -35,9 +36,10 @@ class _CategoryContentState extends State<CategoryContent> {
                 ? 5
                 : MediaQuery.of(context).size.width ~/ 300)
             : 2,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 20,
-        padding: const EdgeInsets.all(40),
+        crossAxisSpacing: GetPlatform.isAndroid || GetPlatform.isIOS ? 5 : 20,
+        mainAxisSpacing: GetPlatform.isAndroid || GetPlatform.isIOS ? 5 : 20,
+        padding: EdgeInsets.all(
+            GetPlatform.isAndroid || GetPlatform.isIOS ? 10 : 40),
         shrinkWrap: true,
         children: [
           ...categorias.map(

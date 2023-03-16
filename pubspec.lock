@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.8.2"
+  date_time_picker:
+    dependency: "direct main"
+    description:
+      name: date_time_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   ffi:
     dependency: transitive
     description:
@@ -130,13 +137,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  ftpconnect:
-    dependency: "direct main"
-    description:
-      name: ftpconnect
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.5"
   get:
     dependency: "direct main"
     description:
@@ -164,7 +164,7 @@ packages:
       name: intl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.18.0"
+    version: "0.17.0"
   js:
     dependency: transitive
     description:
