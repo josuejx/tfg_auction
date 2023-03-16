@@ -78,6 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: InkWell(
               onTap: () async {
                 FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
                   allowedExtensions: ['jpg', 'png', 'jpeg'],
                 );
                 if (result != null) {

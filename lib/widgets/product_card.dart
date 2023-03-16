@@ -28,9 +28,11 @@ class ProductCard extends StatelessWidget {
                   height: 100,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image: NetworkImage(DBProducto().getImagen(producto.id!)),
-                      fit: BoxFit.cover,
+                  ),
+                  child: Hero(
+                    tag: 'P${producto.id.toString()}',
+                    child: Image.network(
+                      DBProducto().getImagen(producto.id!),
                     ),
                   ),
                 ),

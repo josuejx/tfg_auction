@@ -104,6 +104,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       InkWell(
         onTap: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.custom,
             allowedExtensions: ['jpg', 'png', 'jpeg'],
           );
           if (result != null) {
