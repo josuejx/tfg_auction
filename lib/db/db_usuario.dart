@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:get/get.dart';
-import 'package:ssh2/ssh2.dart';
+import 'package:tfg_auction/db/db_general.dart';
 import 'package:tfg_auction/db/env.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:http/http.dart' as http;
@@ -70,17 +68,11 @@ class DBUsuario {
 
       HttpClientResponse response = await request.close();
 
-      // print body
-      String reply = await response.transform(utf8.decoder).join();
-      httpClient.close();
-      print(reply);
-
       if (response.statusCode == 200 || response.statusCode == 201) {
-        //usuario = Usuario.fromJson(json.decode(response.body));
-        //if (image.path != "") {
-        //  usuario = (await readByEmail(usuario.email!))!;
-        //  await uploadImage(image, usuario.id!);
-        //}
+        if (image.path != "") {
+          usuario = (await readByEmail(usuario.email!))!;
+          await DBGeneral.uploadImage(image, 'U${usuario.id.toString()}');
+        }
         return "";
       } else if (response.statusCode == 400) {
         return "Compruebe que el email que está intentando registrar no está ya en uso";
@@ -125,39 +117,6 @@ class DBUsuario {
       }
     } catch (e) {
       return false;
-    }
-  }
-
-  Future uploadImage(File file, int idUsuario) async {
-    try {
-      var client = SSHClient(
-        host: "access935918845.webspace-data.io",
-        port: 22,
-        username: "u1799247386",
-        passwordOrKey: "AuctionTFG2023",
-      );
-      String fileName = '';
-      if (GetPlatform.isWindows) {
-        fileName = file.path.split('\\').last;
-      } else {
-        fileName = file.path.split('/').last;
-      }
-      String extension = fileName.split('.').last;
-      await client.connectSFTP();
-      await client.sftpUpload(
-        path: file.path,
-        toPath: "./usuarios/",
-        callback: (progress) {
-          print(progress); // read upload progress
-        },
-      );
-      await client.sftpRename(
-        oldPath: "/usuarios/$fileName",
-        newPath: "/usuarios/$idUsuario.$extension",
-      );
-      await client.disconnect();
-    } catch (e) {
-      print(e);
     }
   }
 

@@ -40,8 +40,9 @@ dependencies:
   http: ^0.13.3
   shared_preferences: ^2.0.18
   file_picker: ^5.2.6
-  ssh2: ^2.2.3
+  dartssh2: ^2.8.2
   cupertino_modal_sheet: ^1.0.0
+  ftpconnect: ^2.0.5
 dev_dependencies:
 
   # The "flutter_lints" package below contains a set of recommended lints to
