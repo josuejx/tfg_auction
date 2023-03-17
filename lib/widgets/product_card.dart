@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_producto.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/screens/product_screen.dart';
+import 'package:tfg_auction/widgets/boton_archivar.dart';
 
 class ProductCard extends StatelessWidget {
   Producto producto;
@@ -17,29 +18,29 @@ class ProductCard extends StatelessWidget {
           Get.to(() => ProductScreen(producto: producto),
               transition: Transition.topLevel);
         },
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                // Imagen
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Hero(
-                    tag: 'P${producto.id.toString()}',
-                    child: Image.network(
-                      DBProducto().getImagen(producto.id!),
+        child: Stack(
+          children: [
+            Card(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Imagen
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Hero(
+                      tag: 'P${producto.id.toString()}',
+                      child: Image.network(
+                        DBProducto().getImagen(producto.id!),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                // Informacion
-                Expanded(
-                  child: Column(
+                  const SizedBox(height: 10),
+                  // Informacion
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Nombre
@@ -47,7 +48,7 @@ class ProductCard extends StatelessWidget {
                         producto.nombre!,
                         style: TextStyle(
                           fontSize: MediaQuery.of(context).size.width / 300 > 2
-                              ? 14
+                              ? 13
                               : 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -68,7 +69,7 @@ class ProductCard extends StatelessWidget {
                         '${producto.precio!.toStringAsFixed(2)} €',
                         style: TextStyle(
                           fontSize: MediaQuery.of(context).size.width / 300 > 2
-                              ? 14
+                              ? 12
                               : 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -78,18 +79,27 @@ class ProductCard extends StatelessWidget {
                         alignment: Alignment.bottomRight,
                         child: Text(
                           getStatus(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
+                          style: TextStyle(
+                            fontSize:
+                                MediaQuery.of(context).size.width / 300 > 2
+                                    ? 12
+                                    : 14,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       )
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            Positioned(
+              top: 5,
+              right: 5,
+              child: BotonArchivar(),
+            ),
+          ],
         ));
   }
 
