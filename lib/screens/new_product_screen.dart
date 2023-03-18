@@ -9,6 +9,9 @@ import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/db/db_producto.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/models/producto.dart';
+import 'package:tfg_auction/models/usuario.dart';
+import 'package:tfg_auction/screens/product_screen.dart';
+import 'package:tfg_auction/session.dart';
 
 class NewProductScreen extends StatefulWidget {
   const NewProductScreen({Key? key}) : super(key: key);
@@ -57,42 +60,50 @@ class _NewProductScreenState extends State<NewProductScreen> {
             ),
             const Divider(),
             // Boton de crear producto
-            ElevatedButton(
-              onPressed: () async {
-                if (image.path == '') {
-                  Get.snackbar('Error', 'Debes seleccionar una imagen',
-                      colorText: Colors.white, backgroundColor: Colors.red);
-                } else if (producto.nombre == null ||
-                    producto.descripcion == null ||
-                    producto.precio == null ||
-                    producto.finalizacion == null ||
-                    producto.idCategoria == null) {
-                  Get.snackbar('Error', 'Debes rellenar todos los campos',
-                      colorText: Colors.white, backgroundColor: Colors.red);
-                } else {
-                  producto.idUsuario = 1;
-                  String result = await DBProducto().create(producto, image);
-                  if (result == '') {
-                    Get.snackbar(
-                        'Producto creado', 'Producto creado correctamente',
-                        colorText: Colors.white, backgroundColor: Colors.green);
-                  } else {
-                    Get.snackbar('Error', 'Ha ocurrido un error',
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (image.path == '') {
+                    Get.snackbar('Error', 'Debes seleccionar una imagen',
                         colorText: Colors.white, backgroundColor: Colors.red);
+                  } else if (producto.nombre == null ||
+                      producto.descripcion == null ||
+                      producto.precio == null ||
+                      producto.finalizacion == null ||
+                      producto.idCategoria == null) {
+                    Get.snackbar('Error', 'Debes rellenar todos los campos',
+                        colorText: Colors.white, backgroundColor: Colors.red);
+                  } else {
+                    Usuario usuario = (await Session().getSession())!;
+                    producto.idUsuario = usuario.id;
+                    String result = await DBProducto().create(producto, image);
+                    if (result == '') {
+                      producto = (await DBProducto().readByUserAndName(
+                          producto.idUsuario!, producto.nombre!));
+                      Get.off(() => ProductScreen(producto: producto));
+                      Get.snackbar(
+                          'Producto creado', 'Producto creado correctamente',
+                          colorText: Colors.white,
+                          backgroundColor: Colors.green);
+                    } else {
+                      Get.snackbar('Error', 'Ha ocurrido un error',
+                          colorText: Colors.white, backgroundColor: Colors.red);
+                    }
                   }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  fixedSize: Size(
+                      MediaQuery.of(context).size.width / 3 > 150
+                          ? MediaQuery.of(context).size.width / 3
+                          : 150,
+                      50.0),
                 ),
-                fixedSize: Size(
-                    MediaQuery.of(context).size.width / 3 > 150
-                        ? MediaQuery.of(context).size.width / 3
-                        : 150,
-                    50.0),
+                child: const Text('Crear producto'),
               ),
-              child: const Text('Crear producto'),
             ),
           ],
         ));

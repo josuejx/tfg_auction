@@ -13,6 +13,7 @@ class CategoryContent extends StatefulWidget {
 
 class _CategoryContentState extends State<CategoryContent> {
   List<Categoria> categorias = [];
+  bool cargando = true;
 
   @override
   void initState() {
@@ -24,11 +25,18 @@ class _CategoryContentState extends State<CategoryContent> {
     final listaCategorias = await DBCategoria().readAll();
     setState(() {
       categorias = listaCategorias;
+      cargando = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (cargando) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return SingleChildScrollView(
       child: GridView.count(
         crossAxisCount: MediaQuery.of(context).size.width / 300 > 2

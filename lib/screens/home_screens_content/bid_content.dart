@@ -15,6 +15,7 @@ class BidContent extends StatefulWidget {
 class _BidContentState extends State<BidContent> {
   Usuario? usuario;
   List<Puja> pujas = [];
+  bool cargando = true;
 
   @override
   void initState() {
@@ -29,11 +30,19 @@ class _BidContentState extends State<BidContent> {
       // Obtener subastas
       pujas = await DBPuja().readAllByUser(usuario!.id!);
     }
-    setState(() {});
+    setState(() {
+      cargando = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (cargando) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     if (usuario == null) {
       return const Center(
         child: Text("Debes iniciar sesión para ver tus pujas"),

@@ -19,6 +19,8 @@ class _SavedContentState extends State<SavedContent> {
   List<Producto> _productos = [];
   Usuario? usuario;
 
+  bool cargando = true;
+
   @override
   void initState() {
     cargarDatos();
@@ -40,11 +42,19 @@ class _SavedContentState extends State<SavedContent> {
       }
     }
 
-    setState(() {});
+    setState(() {
+      cargando = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (cargando) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     if (usuario == null) {
       return const Center(
         child: Text("Debes iniciar sesión para ver tus productos guardados"),

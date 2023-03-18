@@ -18,66 +18,65 @@ class ProductCard extends StatelessWidget {
           Get.to(() => ProductScreen(producto: producto),
               transition: Transition.topLevel);
         },
-        child: Stack(
-          children: [
-            Card(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Imagen
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Hero(
-                      tag: 'P${producto.id.toString()}',
-                      child: Image.network(
-                        DBProducto().getImagen(producto.id!),
-                      ),
-                    ),
+        child: Card(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Imagen
+              Container(
+                height: MediaQuery.of(context).size.width / 300 > 2 ? 150 : 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Hero(
+                  tag: 'P${producto.id.toString()}',
+                  child: Image.network(
+                    DBProducto().getImagen(producto.id!),
                   ),
-                  const SizedBox(height: 10),
-                  // Informacion
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Nombre
-                      Text(
-                        producto.nombre!,
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width / 300 > 2
-                              ? 13
-                              : 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Informacion
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Nombre
+                    Text(
+                      producto.nombre!,
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width / 300 > 2
+                            ? 13
+                            : 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      if (!GetPlatform.isAndroid && !GetPlatform.isIOS)
-                        const SizedBox(height: 5),
-                      if (!GetPlatform.isAndroid && !GetPlatform.isIOS)
-                        Text(
-                          producto.descripcion!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
+                    ),
+                    if (!GetPlatform.isAndroid && !GetPlatform.isIOS)
                       const SizedBox(height: 5),
+                    if (!GetPlatform.isAndroid && !GetPlatform.isIOS)
                       Text(
-                        '${producto.precio!.toStringAsFixed(2)} €',
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width / 300 > 2
-                              ? 12
-                              : 16,
-                          fontWeight: FontWeight.bold,
+                        producto.descripcion!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
                         ),
                       ),
-                      // Estado
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
+                    const SizedBox(height: 5),
+                    Text(
+                      '${producto.precio!.toStringAsFixed(2)} €',
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width / 300 > 2
+                            ? 12
+                            : 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
                           getStatus(),
                           style: TextStyle(
                             fontSize:
@@ -88,18 +87,16 @@ class ProductCard extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ],
+                        BotonArchivar(
+                          idProducto: producto.id!,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              top: 5,
-              right: 5,
-              child: BotonArchivar(),
-            ),
-          ],
+            ],
+          ),
         ));
   }
 

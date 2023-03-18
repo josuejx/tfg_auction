@@ -46,6 +46,28 @@ class DBProducto {
     }
   }
 
+  Future<List<String>> readByQuery(String filtroNombre) async {
+    try {
+      var productos = await readAll();
+      List<String> nombres = [];
+      if (filtroNombre != '') {
+        for (var producto in productos) {
+          if (producto.nombre!
+              .toLowerCase()
+              .contains(filtroNombre.toLowerCase())) {
+            nombres.add(producto.nombre!);
+          }
+        }
+        return nombres;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
   Future<Producto> read(int idProducto) async {
     try {
       final response =

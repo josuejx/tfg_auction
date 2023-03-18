@@ -22,7 +22,7 @@ class Producto {
     id = json['id'];
     nombre = json['nombre'];
     descripcion = json['descripcion'];
-    precio = json['precio'];
+    precio = json['precio'].toDouble();
     finalizacion = DateTime.parse(json['finalizacion']);
     idCategoria = json['idCategoria'];
     idUsuario = json['idUsuario'];

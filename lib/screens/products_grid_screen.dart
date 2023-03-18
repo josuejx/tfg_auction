@@ -6,21 +6,29 @@ class ProductsGridScreen extends StatelessWidget {
   String? filtro;
   String? titulo;
 
-  ProductsGridScreen(
-      {Key? key, required this.titulo, this.filtrarPor, this.filtro})
+  ProductsGridScreen({Key? key, this.titulo, this.filtrarPor, this.filtro})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(titulo!),
-        centerTitle: true,
-      ),
-      body: ProductsGrid(
-        filtrarPor: filtrarPor,
-        filtro: filtro,
-      ),
-    );
+    if (titulo == null) {
+      return Scaffold(
+        body: ProductsGrid(
+          filtrarPor: filtrarPor,
+          filtro: filtro,
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(titulo!),
+          centerTitle: true,
+        ),
+        body: ProductsGrid(
+          filtrarPor: filtrarPor,
+          filtro: filtro,
+        ),
+      );
+    }
   }
 }

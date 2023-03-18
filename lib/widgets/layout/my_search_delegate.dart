@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/screens/products_grid_screen.dart';
+import 'package:tfg_auction/widgets/products_grid.dart';
 
 class MySearchDelegate extends SearchDelegate {
   @override
@@ -28,22 +31,37 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Text(query);
+    return ProductsGridScreen(
+      filtrarPor: FiltrarPor.Nombre,
+      filtro: query,
+    );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text('Suggestion $index'),
-          onTap: () {
-            query = 'Suggestion $index';
-            showResults(context);
-          },
-        );
+    return FutureBuilder(
+      future: DBProducto().readByQuery(query),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<String> lista = snapshot.data as List<String>;
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(lista[index]),
+                onTap: () {
+                  query = lista[index];
+                  showResults(context);
+                },
+              );
+            },
+            itemCount: lista.length,
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
-      itemCount: 10,
     );
   }
 }

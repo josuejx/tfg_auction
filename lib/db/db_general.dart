@@ -24,7 +24,7 @@ class DBGeneral {
 
       if (nombreFichero.substring(0, 1) == 'U') {
         nombreFichero = '/usuarios/${nombreFichero.substring(1)}.$extension';
-      } else if (fileName.substring(0, 1) == 'P') {
+      } else if (nombreFichero.substring(0, 1) == 'P') {
         nombreFichero = '/productos/${nombreFichero.substring(1)}.$extension';
       }
 
