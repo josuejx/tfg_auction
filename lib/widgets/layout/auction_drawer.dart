@@ -9,6 +9,7 @@ import 'package:tfg_auction/db/env.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/login_screen.dart';
 import 'package:tfg_auction/screens/new_product_screen.dart';
+import 'package:tfg_auction/screens/profile_screen.dart';
 import 'package:tfg_auction/screens/register_screen.dart';
 import 'package:tfg_auction/session.dart';
 
@@ -139,13 +140,17 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
   List<Widget> menuConSesionIniciada() {
     return [
       ListTile(
-        onTap: () {},
+        onTap: () {
+          Get.to(() => ProfileScreen(usuario: _usuario!),
+              transition: Transition.cupertino);
+        },
         leading: const Icon(Icons.account_circle_rounded),
         title: const Text('Perfil'),
       ),
       ListTile(
         onTap: () {
-          Get.to(() => NewProductScreen(), transition: Transition.cupertino);
+          Get.to(() => const NewProductScreen(),
+              transition: Transition.cupertino);
         },
         leading: const Icon(Icons.add),
         title: const Text('Crear subasta'),
