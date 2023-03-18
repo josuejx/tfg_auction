@@ -87,7 +87,7 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
                     shape: BoxShape.circle,
                   ),
                   child: _isLogged
-                      ? Image.network('${Env.base_url}/image/U${_usuario!.id}')
+                      ? getUserImage()
                       : const Icon(Icons.account_circle_rounded,
                           color: Colors.white, size: 128.0),
                 ),
@@ -155,11 +155,6 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
         leading: const Icon(Icons.add),
         title: const Text('Crear subasta'),
       ),
-      ListTile(
-        onTap: () {},
-        leading: const Icon(Icons.settings),
-        title: const Text('Settings'),
-      ),
     ];
   }
 
@@ -178,11 +173,16 @@ class _AuctiOnDrawerState extends State<AuctiOnDrawer> {
           },
           leading: const Icon(Icons.account_circle_sharp),
           title: const Text('Registrarse')),
-      ListTile(
-        onTap: () {},
-        leading: const Icon(Icons.settings),
-        title: const Text('Settings'),
-      ),
     ];
+  }
+
+  Widget getUserImage() {
+    try {
+      String url = DBUsuario().getImage(_usuario!.id!);
+      return Image.network(url);
+    } catch (e) {
+      return const Icon(Icons.account_circle_rounded,
+          color: Colors.white, size: 128.0);
+    }
   }
 }

@@ -46,60 +46,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 horizontal: MediaQuery.of(context).size.width * 0.1 > 30
                     ? MediaQuery.of(context).size.width * 0.1
                     : 30),
-            child: Column(
+            child: ListView(
               children: [...registerFormWidgets()],
             )));
   }
 
   List<Widget> registerFormWidgets() {
     return [
-      Stack(
-        children: [
-          Container(
-            width: 128.0,
-            height: 128.0,
-            margin: const EdgeInsets.only(
-              top: 24.0,
-              bottom: 64.0,
-            ),
-            clipBehavior: Clip.antiAlias,
-            decoration: const BoxDecoration(
-              color: Colors.black26,
-              shape: BoxShape.circle,
-            ),
-            child: _image.path == ''
-                ? const Icon(Icons.account_circle_rounded,
-                    color: Colors.white, size: 128.0)
-                : Image.file(_image),
+      InkWell(
+        onTap: () async {
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.custom,
+            allowedExtensions: ['jpg', 'png', 'jpeg'],
+          );
+          if (result != null) {
+            setState(() {
+              _image = File(result.files.single.path!);
+            });
+          }
+        },
+        child: Container(
+          width: 128.0,
+          height: 128.0,
+          margin: const EdgeInsets.only(
+            top: 24.0,
+            bottom: 64.0,
           ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: InkWell(
-              onTap: () async {
-                FilePickerResult? result = await FilePicker.platform.pickFiles(
-                  type: FileType.custom,
-                  allowedExtensions: ['jpg', 'png', 'jpeg'],
-                );
-                if (result != null) {
-                  setState(() {
-                    _image = File(result.files.single.path!);
-                  });
-                }
-              },
-              child: Container(
-                width: 48.0,
-                height: 48.0,
-                clipBehavior: Clip.antiAlias,
-                decoration: const BoxDecoration(
-                  color: Colors.black26,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.edit, color: Colors.white),
-              ),
-            ),
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(
+            color: Colors.black26,
+            shape: BoxShape.circle,
           ),
-        ],
+          child: _image.path == ''
+              ? const Icon(Icons.account_circle_rounded,
+                  color: Colors.white, size: 128.0)
+              : Image.file(_image),
+        ),
       ),
       const SizedBox(height: 10),
       TextField(

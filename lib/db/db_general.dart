@@ -35,4 +35,38 @@ class DBGeneral {
       print(e);
     }
   }
+
+  static Future deleteImage(String nombreFichero) async {
+    try {
+      var client = SSHClient(
+        await SSHSocket.connect('access935918845.webspace-data.io', 22),
+        username: 'u1799247386',
+        onPasswordRequest: () => 'AuctionTFG2023',
+      );
+
+      String carpeta = '';
+      if (nombreFichero.substring(0, 1) == 'U') {
+        carpeta = '/usuarios';
+      } else if (nombreFichero.substring(0, 1) == 'P') {
+        carpeta = '/productos';
+      }
+
+      final sftp = await client.sftp();
+      var dir = await sftp.listdir('/usuarios');
+
+      for (var item in dir) {
+        if (item.filename == nombreFichero) {
+          await sftp.remove('$carpeta/$nombreFichero');
+          return;
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future replaceImage(File file, String nombreFichero) async {
+    await deleteImage(nombreFichero);
+    await uploadImage(file, nombreFichero);
+  }
 }

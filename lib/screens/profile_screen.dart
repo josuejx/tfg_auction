@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/usuario.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -11,6 +15,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   // text editing controllers
+  File _image = File('');
+
   final TextEditingController _nombreUsuarioController =
       TextEditingController();
 
@@ -70,8 +76,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   List<Widget> _buildFormProfile() {
     return [
+      InkWell(
+        onTap: () async {
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.custom,
+            allowedExtensions: ['jpg', 'png', 'jpeg'],
+          );
+          if (result != null) {
+            setState(() {
+              _image = File(result.files.single.path!);
+            });
+          }
+        },
+        child: Container(
+          width: 128.0,
+          height: 128.0,
+          margin: const EdgeInsets.only(
+            top: 24.0,
+            bottom: 64.0,
+          ),
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(
+            color: Colors.black26,
+            shape: BoxShape.circle,
+          ),
+          child: getUserImage(),
+        ),
+      ),
+      const SizedBox(height: 20),
       TextFormField(
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Nombre de usuario',
           hintText: 'Nombre de usuario',
         ),
@@ -85,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       const SizedBox(height: 20),
       TextFormField(
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Nombre completo',
           hintText: 'Nombre completo',
         ),
@@ -99,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       const SizedBox(height: 20),
       TextFormField(
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Email',
           hintText: 'Email',
         ),
@@ -112,5 +146,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       ),
     ];
+  }
+
+  Widget getUserImage() {
+    if (_image.path == '') {
+      try {
+        String url = DBUsuario().getImage(widget.usuario.id!);
+        return Image.network(url);
+      } catch (e) {
+        return const Icon(Icons.account_circle_rounded,
+            color: Colors.white, size: 128.0);
+      }
+    } else {
+      return Image.file(_image);
+    }
   }
 }

@@ -102,8 +102,8 @@ class DBArchivado {
   Future<String> delete(int id) async {
     try {
       HttpClient httpClient = HttpClient();
-      HttpClientRequest request =
-          await httpClient.deleteUrl(Uri.parse("${Env.base_url}/producto/$id"));
+      HttpClientRequest request = await httpClient
+          .deleteUrl(Uri.parse("${Env.base_url}/archivado/$id"));
 
       HttpClientResponse response = await request.close();
 
