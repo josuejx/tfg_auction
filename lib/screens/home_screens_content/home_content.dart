@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:string_2_icon/string_2_icon.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/widgets/products_grid.dart';
@@ -13,31 +14,47 @@ class _HomeContentState extends State<HomeContent> {
 
   void cargarCategorias() async {
     categorias = await DBCategoria().readAll();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    cargarCategorias();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [Expanded(child: ProductsGrid())],
+      children: [
+        _buildCategoryHorizontalList(),
+        Expanded(child: ProductsGrid()),
+      ],
     );
   }
 
   Widget _buildCategoryHorizontalList() {
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: categorias
-          .map((categoria) => Container(
-                margin: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                    ),
-                    Text(categoria.nombre!)
-                  ],
-                ),
-              ))
-          .toList(),
+    return Container(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: categorias
+            .map((categoria) => Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundImage: Image.network(
+                                DBCategoria().getImagen(categoria.imagen!))
+                            .image,
+                      ),
+                      Text(categoria.nombre!)
+                    ],
+                  ),
+                ))
+            .toList(),
+      ),
     );
   }
 }
