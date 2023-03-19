@@ -31,16 +31,20 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _loading
-            ? ZoomIn(
-                child: const Image(
-                    image: AssetImage('assets/logo_animado.gif'), height: 400),
-              )
-            : Hero(
-                tag: 'logo',
-                child: Image.asset('assets/logo_fondo.png', height: 70)),
-      ),
+      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Center(
+          child: Hero(
+              tag: 'logo',
+              child: Image.asset('assets/logo_fondo.png', height: 70)),
+        ),
+        const SizedBox(height: 20),
+        if (_loading)
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+        if (!_loading)
+          FadeOut(child: const Center(child: CircularProgressIndicator()))
+      ]),
     );
   }
 }

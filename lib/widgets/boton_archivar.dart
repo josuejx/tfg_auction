@@ -46,8 +46,8 @@ class _BotonArchivarState extends State<BotonArchivar> {
     return _logged
         ? IconButton(
             icon: Icon(
-              _archivado ? Icons.archive : Icons.archive_outlined,
-              color: _archivado ? Colors.blue : Colors.black,
+              _archivado ? Icons.favorite : Icons.favorite_outline,
+              color: Colors.red,
             ),
             onPressed: () async {
               _archivado = !_archivado;
@@ -76,8 +76,8 @@ class _BotonArchivarState extends State<BotonArchivar> {
           )
         : IconButton(
             icon: const Icon(
-              Icons.archive_outlined,
-              color: Colors.black,
+              Icons.favorite_outline,
+              color: Colors.red,
             ),
             onPressed: () {
               Get.rawSnackbar(

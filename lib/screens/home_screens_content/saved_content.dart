@@ -70,13 +70,10 @@ class _SavedContentState extends State<SavedContent> {
                     ? (MediaQuery.of(context).size.width ~/ 300 > 5
                         ? 5
                         : MediaQuery.of(context).size.width ~/ 300)
-                    : 2,
-                crossAxisSpacing:
-                    GetPlatform.isAndroid || GetPlatform.isIOS ? 5 : 20,
-                mainAxisSpacing:
-                    GetPlatform.isAndroid || GetPlatform.isIOS ? 5 : 20,
-                padding: EdgeInsets.all(
-                    GetPlatform.isAndroid || GetPlatform.isIOS ? 10 : 40),
+                    : 1,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                padding: const EdgeInsets.all(20),
                 shrinkWrap: true,
                 children: [
                   ..._productos.map((e) => ProductCard(producto: e)).toList(),

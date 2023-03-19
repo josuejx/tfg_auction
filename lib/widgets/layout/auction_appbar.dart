@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tfg_auction/widgets/layout/auction_drawer.dart';
 import 'package:tfg_auction/widgets/layout/my_search_delegate.dart';
 
 class AuctiOnAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -16,12 +15,6 @@ class AuctiOnAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: true,
-      leading: IconButton(
-        onPressed: () {
-          AuctiOnDrawer.drawerController.showDrawer();
-        },
-        icon: const Icon(Icons.menu),
-      ),
       actions: [
         IconButton(
           onPressed: () {
@@ -30,6 +23,8 @@ class AuctiOnAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.search),
         ),
       ],
+      elevation: 0,
+      backgroundColor: Colors.transparent,
     );
   }
 
