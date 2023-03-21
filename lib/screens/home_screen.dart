@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
@@ -117,33 +118,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Scaffold(
       appBar: const AuctiOnAppBar(),
       //bottomNavigationBar: AuctiOnBottomBar(),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            _fabAnimationController.reset();
-            _borderRadiusAnimationController.reset();
-            _borderRadiusAnimationController.forward();
-            _fabAnimationController.forward();
-          },
-          child: Container(
-            height: 50,
-            width: 50,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.deepPurple,
-                  Colors.blue,
-                  Colors.lightBlue,
-                ],
+      floatingActionButton: FadeOutDown(
+        controller: (controller) => _fabAnimationController = controller,
+        child: FloatingActionButton(
+            onPressed: () {
+              _fabAnimationController.reset();
+              _borderRadiusAnimationController.reset();
+              _borderRadiusAnimationController.forward();
+              _fabAnimationController.forward();
+            },
+            child: Container(
+              height: 50,
+              width: 50,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.deepPurple,
+                    Colors.blue,
+                    Colors.lightBlue,
+                  ],
+                ),
               ),
-            ),
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-          )),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+            )),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
         itemCount: icons.length,

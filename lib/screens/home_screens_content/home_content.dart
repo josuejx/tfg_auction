@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:string_2_icon/string_2_icon.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/widgets/products_grid.dart';
@@ -28,7 +27,7 @@ class _HomeContentState extends State<HomeContent> {
     return Column(
       children: [
         _buildCategoryHorizontalList(),
-        Expanded(child: ProductsGrid()),
+        Expanded(child: SingleChildScrollView(child: ProductsGrid())),
       ],
     );
   }

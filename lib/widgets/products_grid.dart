@@ -53,21 +53,19 @@ class _ProductsGridState extends State<ProductsGrid> {
         ? const Center(
             child: Text('No hay productos'),
           )
-        : SingleChildScrollView(
-            child: GridView.count(
-              crossAxisCount: MediaQuery.of(context).size.width / 300 > 2
-                  ? (MediaQuery.of(context).size.width ~/ 300 > 5
-                      ? 5
-                      : MediaQuery.of(context).size.width ~/ 300)
-                  : 1,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-              padding: const EdgeInsets.all(20),
-              shrinkWrap: true,
-              children: [
-                ..._productos.map((e) => ProductCard(producto: e)).toList(),
-              ],
-            ),
+        : GridView.count(
+            crossAxisCount: MediaQuery.of(context).size.width / 300 > 2
+                ? (MediaQuery.of(context).size.width ~/ 300 > 5
+                    ? 5
+                    : MediaQuery.of(context).size.width ~/ 300)
+                : 1,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            padding: const EdgeInsets.all(20),
+            shrinkWrap: true,
+            children: [
+              ..._productos.map((e) => ProductCard(producto: e)).toList(),
+            ],
           );
   }
 }
