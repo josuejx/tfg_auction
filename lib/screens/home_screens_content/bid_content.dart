@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tfg_auction/db/db_puja.dart';
 import 'package:tfg_auction/models/puja.dart';
 import 'package:tfg_auction/models/usuario.dart';
+import 'package:tfg_auction/screens/request_login_screen.dart';
 import 'package:tfg_auction/session.dart';
 import 'package:tfg_auction/widgets/bid_card.dart';
 
@@ -44,9 +45,7 @@ class _BidContentState extends State<BidContent> {
     }
 
     if (usuario == null) {
-      return const Center(
-        child: Text("Debes iniciar sesión para ver tus pujas"),
-      );
+      return const RequestLoginScreen();
     } else if (pujas.isEmpty) {
       return const Center(
         child: Text("No tienes pujas"),

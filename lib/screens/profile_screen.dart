@@ -45,10 +45,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _isThereChanges = true;
       });
+    } else {
+      setState(() {
+        _isThereChanges = false;
+      });
     }
-    setState(() {
-      _isThereChanges = false;
-    });
   }
 
   void cargarDatos() async {
@@ -110,9 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Align(
         alignment: Alignment.centerRight,
         child: ElevatedButton(
-            onPressed: () {
-              Session().logout();
-              Get.offAll(HomeScreen());
+            onPressed: () async {
+              await Session().logout();
+              Get.offAll(() => HomeScreen());
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(

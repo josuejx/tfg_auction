@@ -4,9 +4,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/screens/home_screens_content/bid_content.dart';
+import 'package:tfg_auction/screens/new_product_screen.dart';
 import 'package:tfg_auction/screens/profile_screen.dart';
 import 'package:tfg_auction/widgets/layout/auction_appbar.dart';
 
@@ -118,35 +120,64 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Scaffold(
       appBar: const AuctiOnAppBar(),
       //bottomNavigationBar: AuctiOnBottomBar(),
-      floatingActionButton: FadeOutDown(
-        controller: (controller) => _fabAnimationController = controller,
-        child: FloatingActionButton(
-            onPressed: () {
-              _fabAnimationController.reset();
-              _borderRadiusAnimationController.reset();
-              _borderRadiusAnimationController.forward();
-              _fabAnimationController.forward();
-            },
-            child: Container(
-              height: 50,
-              width: 50,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.deepPurple,
-                    Colors.blue,
-                    Colors.lightBlue,
-                  ],
+      floatingActionButton: AnimatedBuilder(
+        animation: _fabAnimationController,
+        builder: (context, child) => CircularRevealAnimation(
+          animation: fabAnimation,
+          centerAlignment: Alignment.bottomCenter,
+          child: FloatingActionButton(
+              onPressed: () {
+                Get.to(() => const NewProductScreen(),
+                    transition: Transition.downToUp);
+              },
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.deepPurple,
+                      Colors.blue,
+                      Colors.lightBlue,
+                    ],
+                  ),
                 ),
-              ),
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-            )),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+              )),
+        ),
+        //child: FloatingActionButton(
+        //    onPressed: () {
+        //      _fabAnimationController.reset();
+        //      _borderRadiusAnimationController.reset();
+        //      _borderRadiusAnimationController.forward();
+        //      _fabAnimationController.forward();
+        //    },
+        //    child: Container(
+        //      height: 50,
+        //      width: 50,
+        //      decoration: const BoxDecoration(
+        //        shape: BoxShape.circle,
+        //        gradient: LinearGradient(
+        //          begin: Alignment.topLeft,
+        //          end: Alignment.bottomRight,
+        //          colors: [
+        //            Colors.deepPurple,
+        //            Colors.blue,
+        //            Colors.lightBlue,
+        //          ],
+        //        ),
+        //      ),
+        //      child: const Icon(
+        //        Icons.add,
+        //        color: Colors.white,
+        //      ),
+        //    )),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
@@ -196,86 +227,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       body: NotificationListener<ScrollNotification>(
         onNotification: onScrollNotification,
         child: _screens[_bottomNavIndex],
-      ),
-    );
-  }
-}
-
-class NavigationScreen extends StatefulWidget {
-  final IconData iconData;
-
-  NavigationScreen(this.iconData) : super();
-
-  @override
-  _NavigationScreenState createState() => _NavigationScreenState();
-}
-
-class _NavigationScreenState extends State<NavigationScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> animation;
-
-  @override
-  void didUpdateWidget(NavigationScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.iconData != widget.iconData) {
-      _startAnimation();
-    }
-  }
-
-  @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 1000),
-    );
-    animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _controller.forward();
-    super.initState();
-  }
-
-  _startAnimation() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 1000),
-    );
-    animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<Theme>()!;
-    return Container(
-      color: Theme.of(context).colorScheme.background,
-      child: ListView(
-        children: [
-          const SizedBox(height: 64),
-          Center(
-            child: CircularRevealAnimation(
-              animation: animation,
-              centerOffset: Offset(80, 80),
-              maxRadius: MediaQuery.of(context).size.longestSide * 1.1,
-              child: Icon(
-                widget.iconData,
-                color: Colors.blue,
-                size: 160,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

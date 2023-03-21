@@ -47,9 +47,8 @@ class Session {
     }
   }
 
-  void logout() {
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.remove('usuario');
-    });
+  Future logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('usuario');
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/models/categoria.dart';
+import 'package:tfg_auction/screens/products_grid_screen.dart';
 import 'package:tfg_auction/widgets/products_grid.dart';
 
 class HomeContent extends StatefulWidget {
@@ -33,7 +35,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildCategoryHorizontalList() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -42,11 +44,22 @@ class _HomeContentState extends State<HomeContent> {
                   margin: const EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: Image.network(
-                                DBCategoria().getImagen(categoria.imagen!))
-                            .image,
+                      InkWell(
+                        onTap: () {
+                          Get.to(
+                              () => ProductsGridScreen(
+                                    titulo: categoria.nombre!,
+                                    filtrarPor: FiltrarPor.Categoria,
+                                    filtro: categoria.id.toString(),
+                                  ),
+                              transition: Transition.cupertino);
+                        },
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundImage: Image.network(
+                                  DBCategoria().getImagen(categoria.imagen!))
+                              .image,
+                        ),
                       ),
                       Text(categoria.nombre!)
                     ],

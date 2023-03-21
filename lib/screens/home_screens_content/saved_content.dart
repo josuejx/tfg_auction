@@ -5,6 +5,7 @@ import 'package:tfg_auction/db/db_producto.dart';
 import 'package:tfg_auction/models/archivado.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/usuario.dart';
+import 'package:tfg_auction/screens/request_login_screen.dart';
 import 'package:tfg_auction/session.dart';
 import 'package:tfg_auction/widgets/product_card.dart';
 
@@ -56,9 +57,7 @@ class _SavedContentState extends State<SavedContent> {
     }
 
     if (usuario == null) {
-      return const Center(
-        child: Text("Debes iniciar sesión para ver tus productos guardados"),
-      );
+      return const RequestLoginScreen();
     } else {
       return _productos.isEmpty
           ? const Center(
