@@ -28,8 +28,11 @@ class _HomeContentState extends State<HomeContent> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildCategoryHorizontalList(),
-        Expanded(child: SingleChildScrollView(child: ProductsGrid())),
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: _buildCategoryHorizontalList()),
+        const Divider(),
+        Expanded(child: ProductsGrid()),
       ],
     );
   }
@@ -37,6 +40,7 @@ class _HomeContentState extends State<HomeContent> {
   Widget _buildCategoryHorizontalList() {
     return SizedBox(
       height: 100,
+      width: Get.width,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: categorias

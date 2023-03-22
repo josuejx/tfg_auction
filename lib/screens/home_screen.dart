@@ -102,11 +102,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       switch (notification.direction) {
         case ScrollDirection.forward:
           _hideBottomBarAnimationController.reverse();
-          _fabAnimationController.forward(from: 0);
+          _fabAnimationController.forward();
           break;
         case ScrollDirection.reverse:
           _hideBottomBarAnimationController.forward();
-          _fabAnimationController.reverse(from: 1);
+          _fabAnimationController.reverse();
           break;
         case ScrollDirection.idle:
           break;
