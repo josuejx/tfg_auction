@@ -27,99 +27,111 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          child: Column(children: [
-            Expanded(
-                child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                    child: Image.network(
-                      dbProducto.getImagen(producto.id!),
-                      fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
-                      errorBuilder: (BuildContext context, Object exception,
-                          StackTrace? stackTrace) {
-                        return const Center(
-                          child: Text('Error al cargar la imagen'),
-                        );
-                      },
-                    ))),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        AutoSizeText(
-                          producto.nombre!,
-                          style: const TextStyle(fontSize: 20),
-                          maxLines: 1,
-                          group: autoSizeGroup,
+    return InkWell(
+      onTap: () {
+        Get.to(() => ProductScreen(producto: producto),
+            transition: Transition.cupertino);
+      },
+      child: Stack(
+        children: [
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            child: Column(children: [
+              Expanded(
+                  child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15)),
+                      child: Hero(
+                        tag: 'P${producto.id!.toString()}',
+                        child: Image.network(
+                          dbProducto.getImagen(producto.id!),
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                          errorBuilder: (BuildContext context, Object exception,
+                              StackTrace? stackTrace) {
+                            return const Center(
+                              child: Text('Error al cargar la imagen'),
+                            );
+                          },
                         ),
-                        AutoSizeText(
-                          '${producto.precio!.toStringAsFixed(2)}€',
-                          style: const TextStyle(
+                      ))),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AutoSizeText(
+                            producto.nombre!,
+                            style: const TextStyle(fontSize: 20),
+                            maxLines: 1,
+                            group: autoSizeGroup,
+                          ),
+                          AutoSizeText(
+                            '${producto.precio!.toStringAsFixed(2)}€',
+                            style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            group: autoSizeGroup,
+                          ),
+                        ],
+                      ),
+                      AutoSizeText(
+                        producto.descripcion!,
+                        style:
+                            const TextStyle(fontSize: 15, color: Colors.grey),
+                        maxLines: 2,
+                        group: autoSizeGroup,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SlideCountdown(
+                          duration:
+                              producto.finalizacion!.difference(DateTime.now()),
+                          slideDirection: SlideDirection.up,
+                          separator: ':',
+                          textStyle: const TextStyle(
                               fontSize: 15,
                               color: Colors.blue,
                               fontWeight: FontWeight.bold),
-                          maxLines: 1,
-                          group: autoSizeGroup,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                          ),
+                          onDone: () {},
                         ),
-                      ],
-                    ),
-                    AutoSizeText(
-                      producto.descripcion!,
-                      style: const TextStyle(fontSize: 15, color: Colors.grey),
-                      maxLines: 2,
-                      group: autoSizeGroup,
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SlideCountdown(
-                        duration:
-                            producto.finalizacion!.difference(DateTime.now()),
-                        slideDirection: SlideDirection.up,
-                        separator: ':',
-                        textStyle: const TextStyle(
-                            fontSize: 15,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                        ),
-                        onDone: () {},
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ]),
-        ),
-        Positioned(
-            top: 10, right: 10, child: BotonArchivar(idProducto: producto.id!)),
-      ],
+            ]),
+          ),
+          Positioned(
+              top: 10,
+              right: 10,
+              child: BotonArchivar(idProducto: producto.id!)),
+        ],
+      ),
     );
   }
 }

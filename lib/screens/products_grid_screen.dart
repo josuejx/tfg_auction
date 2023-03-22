@@ -13,11 +13,9 @@ class ProductsGridScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     if (titulo == null) {
       return Scaffold(
-        body: SingleChildScrollView(
-          child: ProductsGrid(
-            filtrarPor: filtrarPor,
-            filtro: filtro,
-          ),
+        body: ProductsGrid(
+          filtrarPor: filtrarPor,
+          filtro: filtro,
         ),
       );
     } else {
@@ -26,11 +24,9 @@ class ProductsGridScreen extends StatelessWidget {
           title: Text(titulo!),
           centerTitle: true,
         ),
-        body: SingleChildScrollView(
-          child: ProductsGrid(
-            filtrarPor: filtrarPor,
-            filtro: filtro,
-          ),
+        body: ProductsGrid(
+          filtrarPor: filtrarPor,
+          filtro: filtro,
         ),
       );
     }
