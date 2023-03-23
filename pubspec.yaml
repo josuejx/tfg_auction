@@ -45,7 +45,6 @@ dependencies:
   animated_bottom_navigation_bar: ^1.2.0
   circular_reveal_animation: ^2.0.0
   auto_size_text: ^3.0.0
-  skeleton_loader: ^2.0.0+4
   slide_countdown: ^0.5.0
   string_2_icon: ^0.0.2
   

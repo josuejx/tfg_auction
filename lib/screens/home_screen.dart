@@ -11,6 +11,7 @@ import 'package:tfg_auction/screens/home_screens_content/bid_content.dart';
 import 'package:tfg_auction/screens/new_product_screen.dart';
 import 'package:tfg_auction/screens/profile_screen.dart';
 import 'package:tfg_auction/widgets/layout/auction_appbar.dart';
+import 'package:tfg_auction/widgets/layout/my_search_delegate.dart';
 
 import 'home_screens_content/home_content.dart';
 import 'home_screens_content/saved_content.dart';
@@ -33,6 +34,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late CurvedAnimation fabCurve;
   late CurvedAnimation borderRadiusCurve;
   late AnimationController _hideBottomBarAnimationController;
+
+  double scrollOffset = 0.0;
 
   final _screens = [
     HomeContent(),
@@ -60,20 +63,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
 
     _fabAnimationController = AnimationController(
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     _borderRadiusAnimationController = AnimationController(
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     fabCurve = CurvedAnimation(
       parent: _fabAnimationController,
-      curve: Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
+      curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
     );
     borderRadiusCurve = CurvedAnimation(
       parent: _borderRadiusAnimationController,
-      curve: Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
+      curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
     );
 
     fabAnimation = Tween<double>(begin: 0, end: 1).animate(fabCurve);
@@ -82,16 +85,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
 
     _hideBottomBarAnimationController = AnimationController(
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
 
     Future.delayed(
-      Duration(seconds: 1),
+      const Duration(seconds: 1),
       () => _fabAnimationController.forward(),
     );
     Future.delayed(
-      Duration(seconds: 1),
+      const Duration(seconds: 1),
       () => _borderRadiusAnimationController.forward(),
     );
   }
@@ -112,13 +115,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           break;
       }
     }
+    setState(() {
+      scrollOffset = notification.metrics.pixels;
+    });
     return false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AuctiOnAppBar(),
+      appBar: AppBar(
+        title: Hero(
+          tag: 'logo',
+          child: Image.asset(
+            'assets/logo.png',
+            height: 40,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showSearch(context: context, delegate: MySearchDelegate());
+            },
+            icon: const Icon(Icons.search),
+          ),
+        ],
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       //bottomNavigationBar: AuctiOnBottomBar(),
       floatingActionButton: AnimatedBuilder(
         animation: _fabAnimationController,
@@ -151,33 +175,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               )),
         ),
-        //child: FloatingActionButton(
-        //    onPressed: () {
-        //      _fabAnimationController.reset();
-        //      _borderRadiusAnimationController.reset();
-        //      _borderRadiusAnimationController.forward();
-        //      _fabAnimationController.forward();
-        //    },
-        //    child: Container(
-        //      height: 50,
-        //      width: 50,
-        //      decoration: const BoxDecoration(
-        //        shape: BoxShape.circle,
-        //        gradient: LinearGradient(
-        //          begin: Alignment.topLeft,
-        //          end: Alignment.bottomRight,
-        //          colors: [
-        //            Colors.deepPurple,
-        //            Colors.blue,
-        //            Colors.lightBlue,
-        //          ],
-        //        ),
-        //      ),
-        //      child: const Icon(
-        //        Icons.add,
-        //        color: Colors.white,
-        //      ),
-        //    )),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
@@ -215,7 +212,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         gapLocation: GapLocation.center,
         leftCornerRadius: 32,
         rightCornerRadius: 32,
-        onTap: (index) => setState(() => _bottomNavIndex = index),
+        onTap: (index) => setState(() {
+          _bottomNavIndex = index;
+        }),
         hideAnimationController: _hideBottomBarAnimationController,
         shadow: const BoxShadow(
           offset: Offset(0, 1),

@@ -47,6 +47,7 @@ class ProductCard extends StatelessWidget {
                         tag: 'P${producto.id!.toString()}',
                         child: Image.network(
                           dbProducto.getImagen(producto.id!),
+                          fit: BoxFit.cover,
                           loadingBuilder: (BuildContext context, Widget child,
                               ImageChunkEvent? loadingProgress) {
                             if (loadingProgress == null) return child;
@@ -117,7 +118,13 @@ class ProductCard extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(5)),
                           ),
-                          onDone: () {},
+                          replacement: const Text(
+                            'Finalizado',
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
+                          ),
                         ),
                       ),
                     ],

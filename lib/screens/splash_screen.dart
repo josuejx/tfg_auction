@@ -34,8 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
           child: Hero(
-              tag: 'logo',
-              child: Image.asset('assets/logo_fondo.png', height: 70)),
+              tag: 'logo', child: Image.asset('assets/logo.png', height: 70)),
         ),
         const SizedBox(height: 20),
         if (_loading)

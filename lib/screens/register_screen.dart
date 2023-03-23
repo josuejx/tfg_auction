@@ -36,8 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Hero(
-              tag: 'logo',
-              child: Image.asset('assets/logo_fondo.png', height: 40)),
+              tag: 'logo', child: Image.asset('assets/logo.png', height: 40)),
           elevation: 0,
           centerTitle: true,
         ),

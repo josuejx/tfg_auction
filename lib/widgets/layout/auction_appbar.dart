@@ -10,11 +10,10 @@ class AuctiOnAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Hero(
         tag: 'logo',
         child: Image.asset(
-          'assets/logo_fondo.png',
+          'assets/logo.png',
           height: 40,
         ),
       ),
-      centerTitle: true,
       actions: [
         IconButton(
           onPressed: () {

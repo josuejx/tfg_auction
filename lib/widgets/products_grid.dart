@@ -54,7 +54,7 @@ class _ProductsGridState extends State<ProductsGrid> {
             child: Text('No hay productos'),
           )
         : GridView.count(
-            crossAxisCount: MediaQuery.of(context).size.width / 300 > 2
+            crossAxisCount: MediaQuery.of(context).size.width / 300 > 1
                 ? (MediaQuery.of(context).size.width ~/ 300 > 5
                     ? 5
                     : MediaQuery.of(context).size.width ~/ 300)
