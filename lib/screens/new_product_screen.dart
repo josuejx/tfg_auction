@@ -38,6 +38,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
 
   void cargarDatos() async {
     categorias = await DBCategoria().readAll();
+    setState(() {});
   }
 
   @override

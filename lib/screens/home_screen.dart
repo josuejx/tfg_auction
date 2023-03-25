@@ -19,7 +19,9 @@ import 'home_screens_content/home_content.dart';
 import 'home_screens_content/saved_content.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  int index = 0;
+
+  HomeScreen({Key? key, this.index = 0}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -63,6 +65,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    _bottomNavIndex = widget.index;
 
     _fabAnimationController = AnimationController(
       duration: const Duration(milliseconds: 500),

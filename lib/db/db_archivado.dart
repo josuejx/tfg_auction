@@ -4,10 +4,8 @@ import 'package:tfg_auction/models/usuario.dart';
 
 class DBArchivado {
   Future<List<Archivado>> readAll() async {
-    final docArchivado = FirebaseFirestore.instance
-        .collection('archivados')
-        .orderBy('fecha', descending: true)
-        .get();
+    final docArchivado =
+        FirebaseFirestore.instance.collection('archivados').get();
 
     final doc = await docArchivado;
 
@@ -24,7 +22,6 @@ class DBArchivado {
     final docArchivado = FirebaseFirestore.instance
         .collection('archivados')
         .where('idUsuario', isEqualTo: usuario.email)
-        .orderBy('fecha', descending: true)
         .get();
 
     final doc = await docArchivado;
@@ -74,10 +71,11 @@ class DBArchivado {
     return;
   }
 
-  Future delete(int id) async {
+  Future delete(Archivado archivado) async {
     final docArchivado = FirebaseFirestore.instance
         .collection('archivados')
-        .where('id', isEqualTo: id)
+        .where('idProducto', isEqualTo: archivado.idProducto)
+        .where('idUsuario', isEqualTo: archivado.idUsuario)
         .get();
 
     final doc = await docArchivado;

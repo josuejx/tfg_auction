@@ -33,8 +33,7 @@ class _SavedContentState extends State<SavedContent> {
 
     if (usuario != null) {
       DBArchivado dbArchivado = DBArchivado();
-      // List<Archivado> archivados = await dbArchivado.readByUser(usuario!.id!);
-      List<Archivado> archivados = [];
+      List<Archivado> archivados = await dbArchivado.readByUser(usuario!);
       for (var item in archivados) {
         Producto producto = await DBProducto().read(item.idProducto!);
         if (producto.id != null) {
