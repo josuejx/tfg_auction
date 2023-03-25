@@ -76,7 +76,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                         colorText: Colors.white, backgroundColor: Colors.red);
                   } else {
                     Usuario usuario = (await Session().getSession())!;
-                    producto.idUsuario = usuario.id;
+                    //producto.idUsuario = usuario.id;
                     String result = await DBProducto().create(producto, image);
                     if (result == '') {
                       producto = (await DBProducto().readByUserAndName(

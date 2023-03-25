@@ -30,7 +30,7 @@ class _ProductScreenState extends State<ProductScreen> {
   void cargarDatos() async {
     final usuarioLeido = await dbUsuario.read(widget.producto.idUsuario!);
     setState(() {
-      usuario = usuarioLeido!;
+      usuario = usuarioLeido;
     });
   }
 
@@ -49,7 +49,7 @@ class _ProductScreenState extends State<ProductScreen> {
               child: Hero(
                 tag: 'P${widget.producto.id.toString()}',
                 child: Image.network(
-                  dbProducto.getImagen(widget.producto.id!),
+                  widget.producto.imagen!,
                 ),
               ),
             ),
@@ -158,7 +158,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Widget _buildUserInfo() {
-    if (usuario.id == null) {
+    if (usuario.email == null) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -167,9 +167,17 @@ class _ProductScreenState extends State<ProductScreen> {
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(dbUsuario.getImage(usuario.id!)),
-          ),
+          FutureBuilder(
+              future: dbUsuario.getImage(usuario),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return CircleAvatar(
+                    backgroundImage: NetworkImage(snapshot.data.toString()),
+                  );
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              }),
           const SizedBox(
             width: 10,
           ),

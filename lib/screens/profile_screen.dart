@@ -65,9 +65,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return usuario.id == null
-        ? const RequestLoginScreen()
-        : _buildLoggedInScreen();
+    //return usuario.id == null
+    //    ? const RequestLoginScreen()
+    //    : _buildLoggedInScreen();
+    return _buildLoggedInScreen();
   }
 
   Widget _buildLoggedInScreen() {
@@ -193,7 +194,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget getUserImage() {
     if (_image.path == '') {
       try {
-        String url = DBUsuario().getImage(usuario.id!);
+        String url = "";
+        //DBUsuario().getImage(usuario.id!);
         return Image.network(url);
       } catch (e) {
         return const Icon(Icons.account_circle_rounded,

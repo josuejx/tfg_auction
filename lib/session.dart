@@ -1,28 +1,24 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tfg_auction/db/env.dart';
 import 'package:tfg_auction/models/usuario.dart';
 
 class Session {
-  Future<bool> login(String email, String passwd) async {
-    try {
-      final response =
-          await http.get(Uri.parse("${Env.base_url}/usuario/email/$email"));
+  Future<bool> login(String email, String password) async {
+    final docUser = FirebaseFirestore.instance
+        .collection('usuarios')
+        .where('email', isEqualTo: email)
+        .where('passwd', isEqualTo: password)
+        .get();
 
-      if (response.statusCode == 200) {
-        final usuario = Usuario.fromJson(jsonDecode(response.body)[0]);
-        if (usuario.password == passwd) {
-          setSession(usuario);
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } catch (e) {
+    final doc = await docUser;
+
+    if (doc.docs.isNotEmpty) {
+      final usuario = Usuario.fromJson(doc.docs.first.data());
+      setSession(usuario);
+      return true;
+    } else {
       return false;
     }
   }

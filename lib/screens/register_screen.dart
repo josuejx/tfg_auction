@@ -179,7 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               email: _emailController.text,
               password: _passwordController.text);
 
-          String test = await DBUsuario().create(usuario, _image);
+          String test = await DBUsuario().save(usuario, _image);
           if (test == "") {
             Get.snackbar("Registro completado",
                 "Usuario creado correctamente, ya puede iniciar sesión",

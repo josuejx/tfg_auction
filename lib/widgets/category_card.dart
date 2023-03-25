@@ -40,15 +40,25 @@ class CategoryCard extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                ),
-                child: Image.network(
-                  dbCategoria.getImagen(categoria.imagen!),
-                  fit: BoxFit.cover,
-                ),
-              ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                  child: FutureBuilder(
+                    future: dbCategoria.getImagen(categoria),
+                    builder: (context, AsyncSnapshot<String> snapshot) {
+                      if (snapshot.hasData) {
+                        return Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                        );
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  )),
             ),
             Container(
               padding: const EdgeInsets.all(10),

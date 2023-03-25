@@ -29,7 +29,8 @@ class _BidContentState extends State<BidContent> {
     usuario = await Session().getSession();
     if (usuario != null) {
       // Obtener subastas
-      pujas = await DBPuja().readAllByUser(usuario!.id!);
+      pujas = [];
+      //await DBPuja().readAllByUser(usuario!.id!);
     }
     setState(() {
       cargando = false;

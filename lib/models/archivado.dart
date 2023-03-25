@@ -1,6 +1,6 @@
 class Archivado {
   int? id;
-  int? idUsuario;
+  String? idUsuario;
   int? idProducto;
 
   Archivado({this.idUsuario, this.idProducto});

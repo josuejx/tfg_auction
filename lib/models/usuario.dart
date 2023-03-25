@@ -1,12 +1,10 @@
 class Usuario {
-  int? id;
   String? nombreUsuario;
   String? nombreCompleto;
   String? email;
   String? password;
 
   Usuario({
-    this.id,
     this.nombreUsuario,
     this.nombreCompleto,
     this.email,
@@ -14,7 +12,6 @@ class Usuario {
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
-        id: json["id"],
         nombreUsuario: json["nombreUsuario"],
         nombreCompleto: json["nombreCompleto"],
         email: json["email"],
@@ -22,7 +19,6 @@ class Usuario {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
         "nombreUsuario": nombreUsuario,
         "nombreCompleto": nombreCompleto,
         "email": email,
@@ -31,6 +27,6 @@ class Usuario {
 
   @override
   String toString() {
-    return 'Usuario{id: $id, nombreUsuario: $nombreUsuario, nombreCompleto: $nombreCompleto, email: $email, password: $password}';
+    return 'Usuario{nombreUsuario: $nombreUsuario, nombreCompleto: $nombreCompleto, email: $email, password: $password}';
   }
 }

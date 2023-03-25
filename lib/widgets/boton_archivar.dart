@@ -29,12 +29,12 @@ class _BotonArchivarState extends State<BotonArchivar> {
     Usuario? usuario = await Session().getSession();
 
     if (usuario != null) {
-      Archivado archivado = await DBArchivado().readByUserAndProduct(
-        usuario.id!,
+      Archivado archivado = await DBArchivado().read(
+        usuario.email!,
         widget.idProducto,
       );
       setState(() {
-        _archivadoModel.idUsuario = usuario.id;
+        _archivadoModel.idUsuario = usuario.email;
         _archivado = archivado.id != null;
         _logged = true;
       });
@@ -59,7 +59,7 @@ class _BotonArchivarState extends State<BotonArchivar> {
                   return;
                 }
               } else {
-                _archivadoModel = await DBArchivado().readByUserAndProduct(
+                _archivadoModel = await DBArchivado().read(
                   _archivadoModel.idUsuario!,
                   _archivadoModel.idProducto!,
                 );

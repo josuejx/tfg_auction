@@ -49,22 +49,31 @@ class _HomeContentState extends State<HomeContent> {
                   child: Column(
                     children: [
                       InkWell(
-                        onTap: () {
-                          Get.to(
-                              () => ProductsGridScreen(
-                                    titulo: categoria.nombre!,
-                                    filtrarPor: FiltrarPor.Categoria,
-                                    filtro: categoria.id.toString(),
-                                  ),
-                              transition: Transition.cupertino);
-                        },
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: Image.network(
-                                  DBCategoria().getImagen(categoria.imagen!))
-                              .image,
-                        ),
-                      ),
+                          onTap: () {
+                            Get.to(
+                                () => ProductsGridScreen(
+                                      titulo: categoria.nombre!,
+                                      filtrarPor: FiltrarPor.Categoria,
+                                      filtro: categoria.id.toString(),
+                                    ),
+                                transition: Transition.cupertino);
+                          },
+                          child: FutureBuilder(
+                            future: DBCategoria().getImagen(categoria),
+                            builder: (context, AsyncSnapshot<String> snapshot) {
+                              if (snapshot.hasData) {
+                                return CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage:
+                                      Image.network(snapshot.data!).image,
+                                );
+                              } else {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            },
+                          )),
                       Text(categoria.nombre!)
                     ],
                   ),

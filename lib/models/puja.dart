@@ -4,7 +4,7 @@ class Puja {
   DateTime? fecha;
 
   // Relaciones
-  int? idUsuario;
+  String? idUsuario;
   int? idProducto;
 
   // Constructor

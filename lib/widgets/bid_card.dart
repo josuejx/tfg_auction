@@ -40,9 +40,7 @@ class _BidCardState extends State<BidCard> {
     DBUsuario dbUsuario = DBUsuario();
     for (var puja in pujas) {
       Usuario? usuario = await dbUsuario.read(puja.idUsuario!);
-      if (usuario != null) {
-        usuarios.add(usuario);
-      }
+      usuarios.add(usuario);
     }
     setState(() {});
   }
@@ -79,7 +77,7 @@ class _BidCardState extends State<BidCard> {
                         child: Hero(
                           tag: 'P${producto.id.toString()}',
                           child: Image.network(
-                            DBProducto().getImagen(producto.id!),
+                            producto.imagen!,
                             width: 50,
                           ),
                         ),
@@ -101,7 +99,7 @@ class _BidCardState extends State<BidCard> {
                               Text("Última puja: ${pujas.last.cantidad}€"),
                         ),
                       ),
-                      if (usuarios.last.id != null &&
+                      if (usuarios.last.email != null &&
                           producto.finalizacion!.isBefore(DateTime.now()))
                         Expanded(
                           child: ListTile(

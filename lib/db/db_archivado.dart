@@ -1,120 +1,92 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:http/http.dart' as http;
-import 'package:tfg_auction/db/env.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tfg_auction/models/archivado.dart';
+import 'package:tfg_auction/models/usuario.dart';
 
 class DBArchivado {
   Future<List<Archivado>> readAll() async {
-    try {
-      final response = await http.get(Uri.parse("${Env.base_url}/archivado"));
+    final docArchivado = FirebaseFirestore.instance
+        .collection('archivados')
+        .orderBy('fecha', descending: true)
+        .get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List<Archivado> archivados = [];
-        for (var item in json.decode(response.body)) {
-          archivados.add(Archivado.fromJson(item));
-        }
-        return archivados;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+    final doc = await docArchivado;
+
+    final archivados = <Archivado>[];
+
+    doc.docs.forEach((element) {
+      archivados.add(Archivado.fromJson(element.data()));
+    });
+
+    return archivados;
   }
 
-  Future<List<Archivado>> readByUser(int idUsuario) async {
-    try {
-      final response = await http
-          .get(Uri.parse("${Env.base_url}/archivado/idUsuario/$idUsuario"));
+  Future<List<Archivado>> readByUser(Usuario usuario) async {
+    final docArchivado = FirebaseFirestore.instance
+        .collection('archivados')
+        .where('idUsuario', isEqualTo: usuario.email)
+        .orderBy('fecha', descending: true)
+        .get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List<Archivado> archivados = [];
-        for (var item in json.decode(response.body)) {
-          archivados.add(Archivado.fromJson(item));
-        }
-        return archivados;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+    final doc = await docArchivado;
+
+    final archivados = <Archivado>[];
+
+    doc.docs.forEach((element) {
+      archivados.add(Archivado.fromJson(element.data()));
+    });
+
+    return archivados;
   }
 
-  Future<Archivado> read(int id) async {
-    try {
-      final response =
-          await http.get(Uri.parse("${Env.base_url}/archivado/$id"));
+  Future<Archivado> read(String idUsuario, int idProducto) async {
+    final docArchivado = FirebaseFirestore.instance
+        .collection('archivados')
+        .where('idUsuario', isEqualTo: idUsuario)
+        .where('idProducto', isEqualTo: idProducto)
+        .get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Archivado.fromJson(json.decode(response.body));
-      } else {
-        return Archivado();
-      }
-    } catch (e) {
-      print(e);
-      return Archivado();
-    }
+    final doc = await docArchivado;
+
+    Archivado archivado = Archivado();
+
+    doc.docs.forEach((element) {
+      archivado = Archivado.fromJson(element.data());
+    });
+
+    return archivado;
   }
 
-  Future<Archivado> readByUserAndProduct(int idUsuario, int idProducto) async {
-    try {
-      List<Archivado> archivados = await readByUser(idUsuario);
-      for (var item in archivados) {
-        if (item.idProducto == idProducto) {
-          return item;
-        }
-      }
-      return Archivado();
-    } catch (e) {
-      print(e);
-      return Archivado();
+  Future create(Archivado archivado) async {
+    final docArchivado = FirebaseFirestore.instance
+        .collection('archivados')
+        .where('idUsuario', isEqualTo: archivado.idUsuario)
+        .where('idProducto', isEqualTo: archivado.idProducto)
+        .get();
+
+    final doc = await docArchivado;
+
+    if (doc.docs.length == 0) {
+      await FirebaseFirestore.instance
+          .collection('archivados')
+          .add(archivado.toJson());
     }
+
+    return;
   }
 
-  Future<String> create(Archivado archivado) async {
-    try {
-      HttpClient httpClient = HttpClient();
-      HttpClientRequest request =
-          await httpClient.postUrl(Uri.parse("${Env.base_url}/archivado"));
+  Future delete(int id) async {
+    final docArchivado = FirebaseFirestore.instance
+        .collection('archivados')
+        .where('id', isEqualTo: id)
+        .get();
 
-      request.headers.set('Accept', 'application/json');
-      request.headers.set('Content-type', 'application/json');
-      request.add(utf8.encode(json.encode(archivado.toJson())));
+    final doc = await docArchivado;
 
-      HttpClientResponse response = await request.close();
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return "";
-      } else {
-        return "Fallo al archivar el producto";
-      }
-    } catch (e) {
-      print(e);
-      return "Error de conexión con el servidor";
-    }
-  }
-
-  Future<String> delete(int id) async {
-    try {
-      HttpClient httpClient = HttpClient();
-      HttpClientRequest request = await httpClient
-          .deleteUrl(Uri.parse("${Env.base_url}/archivado/$id"));
-
-      HttpClientResponse response = await request.close();
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return "";
-      } else {
-        return "Fallo al desarchivar el producto";
-      }
-    } catch (e) {
-      print(e);
-      return "Error de conexión con el servidor";
-    }
+    doc.docs.forEach((element) {
+      FirebaseFirestore.instance
+          .collection('archivados')
+          .doc(element.id)
+          .delete();
+    });
   }
 }

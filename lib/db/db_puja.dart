@@ -1,66 +1,54 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-import 'package:tfg_auction/db/env.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/puja.dart';
+import 'package:tfg_auction/models/usuario.dart';
 
 class DBPuja {
   Future<List<Puja>> readAll() async {
-    try {
-      final response = await http.get(Uri.parse("${Env.base_url}/puja"));
+    final docPuja = FirebaseFirestore.instance.collection('pujas').get();
 
-      if (response.statusCode == 200) {
-        List<Puja> pujas = [];
-        for (var item in json.decode(response.body)) {
-          pujas.add(Puja.fromJson(item));
-        }
-        return pujas;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+    final doc = await docPuja;
+
+    final pujas = <Puja>[];
+
+    doc.docs.forEach((element) {
+      pujas.add(Puja.fromJson(element.data()));
+    });
+
+    return pujas;
   }
 
-  Future<List<Puja>> readAllByUser(int idUsuario) async {
-    try {
-      final response = await http
-          .get(Uri.parse("${Env.base_url}/puja/idUsuario/$idUsuario"));
+  Future<List<Puja>> readAllByUser(Usuario usuario) async {
+    final docPuja = FirebaseFirestore.instance
+        .collection('pujas')
+        .where('idUsuario', isEqualTo: usuario.email)
+        .get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List<Puja> pujas = [];
-        for (var item in json.decode(response.body)) {
-          pujas.add(Puja.fromJson(item));
-        }
-        return pujas;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+    final doc = await docPuja;
+
+    final pujas = <Puja>[];
+
+    doc.docs.forEach((element) {
+      pujas.add(Puja.fromJson(element.data()));
+    });
+
+    return pujas;
   }
 
   Future<List<Puja>> readAllByProduct(int idProducto) async {
-    try {
-      final response = await http
-          .get(Uri.parse("${Env.base_url}/puja/idProducto/$idProducto"));
+    final docPuja = FirebaseFirestore.instance
+        .collection('pujas')
+        .where('idProducto', isEqualTo: idProducto)
+        .get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List<Puja> pujas = [];
-        for (var item in json.decode(response.body)) {
-          pujas.add(Puja.fromJson(item));
-        }
-        return pujas;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+    final doc = await docPuja;
+
+    final pujas = <Puja>[];
+
+    doc.docs.forEach((element) {
+      pujas.add(Puja.fromJson(element.data()));
+    });
+
+    return pujas;
   }
 }
