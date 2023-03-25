@@ -19,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   Usuario usuario = Usuario();
   bool _isThereChanges = false;
+  bool _loading = true;
 
   // text editing controllers
   File _image = File('');
@@ -60,11 +61,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _nombreCompletoController.text = usuario.nombreCompleto!;
       _emailController.text = usuario.email!;
     }
-    setState(() {});
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return usuario.email == null
         ? RequestLoginScreen()
         : _buildLoggedInScreen();
@@ -106,7 +114,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
               checkChanges();
             },
-            child: getUserImage()),
+            child: FutureBuilder(
+              future: getUserImage(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data as Widget;
+                } else {
+                  return const Icon(Icons.account_circle_rounded,
+                      color: Colors.white, size: 128.0);
+                }
+              },
+            )),
       ),
       Align(
         alignment: Alignment.centerRight,
@@ -178,7 +196,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       const SizedBox(height: 20),
       if (_isThereChanges)
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () async {
+            usuario.nombreUsuario = _nombreUsuarioController.text;
+            usuario.nombreCompleto = _nombreCompletoController.text;
+            usuario.email = _emailController.text;
+            await DBUsuario().save(usuario, _image);
+            Session().logout();
+            Session().setSession(usuario);
+            setState(() {
+              _isThereChanges = false;
+            });
+          },
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -190,12 +218,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ];
   }
 
-  Widget getUserImage() {
+  Future<Widget> getUserImage() async {
     if (_image.path == '') {
       try {
         String url = "";
-        //DBUsuario().getImage(usuario.id!);
-        return Image.network(url);
+        url = await DBUsuario().getImage(usuario);
+        return Image.network(
+          url,
+          errorBuilder: (context, error, stackTrace) {
+            return const Icon(Icons.account_circle_rounded,
+                color: Colors.white, size: 128.0);
+          },
+        );
       } catch (e) {
         return const Icon(Icons.account_circle_rounded,
             color: Colors.white, size: 128.0);
