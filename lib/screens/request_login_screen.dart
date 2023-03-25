@@ -4,7 +4,9 @@ import 'package:tfg_auction/screens/login_screen.dart';
 import 'package:tfg_auction/screens/register_screen.dart';
 
 class RequestLoginScreen extends StatelessWidget {
-  const RequestLoginScreen({Key? key}) : super(key: key);
+  bool getOff;
+
+  RequestLoginScreen({Key? key, this.getOff = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,11 @@ class RequestLoginScreen extends StatelessWidget {
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
-            Get.to(() => LoginScreen(), transition: Transition.zoom);
+            if (getOff) {
+              Get.off(() => LoginScreen(), transition: Transition.zoom);
+            } else {
+              Get.to(() => LoginScreen(), transition: Transition.zoom);
+            }
           },
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
@@ -30,7 +36,11 @@ class RequestLoginScreen extends StatelessWidget {
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
-            Get.to(() => RegisterScreen(), transition: Transition.zoom);
+            if (getOff) {
+              Get.off(() => RegisterScreen(), transition: Transition.zoom);
+            } else {
+              Get.to(() => RegisterScreen(), transition: Transition.zoom);
+            }
           },
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(

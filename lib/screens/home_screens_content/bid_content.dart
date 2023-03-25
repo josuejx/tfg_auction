@@ -46,7 +46,7 @@ class _BidContentState extends State<BidContent> {
     }
 
     if (usuario == null) {
-      return const RequestLoginScreen();
+      return RequestLoginScreen();
     } else if (pujas.isEmpty) {
       return const Center(
         child: Text("No tienes pujas"),

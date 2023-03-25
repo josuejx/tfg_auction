@@ -48,8 +48,20 @@ class _ProductScreenState extends State<ProductScreen> {
                   : MediaQuery.of(context).size.width / 2,
               child: Hero(
                 tag: 'P${widget.producto.id.toString()}',
-                child: Image.network(
-                  widget.producto.imagen!,
+                child: FutureBuilder(
+                  future: dbProducto.getImagen(widget.producto),
+                  builder: (context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.hasData) {
+                      return Image.network(
+                        snapshot.data!,
+                        fit: BoxFit.cover,
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
                 ),
               ),
             ),
@@ -171,8 +183,26 @@ class _ProductScreenState extends State<ProductScreen> {
               future: dbUsuario.getImage(usuario),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.data == null) {
+                    return CircleAvatar(
+                      backgroundColor: Colors.white,
+                      backgroundImage: Image.asset(
+                        'assets/user.png',
+                        fit: BoxFit.cover,
+                      ).image,
+                    );
+                  }
                   return CircleAvatar(
-                    backgroundImage: NetworkImage(snapshot.data.toString()),
+                    backgroundImage: Image.network(
+                      snapshot.data!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/user.png',
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ).image,
                   );
                 } else {
                   return const CircularProgressIndicator();

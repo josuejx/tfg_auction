@@ -31,19 +31,20 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Center(
-          child: Hero(
-              tag: 'logo', child: Image.asset('assets/logo.png', height: 70)),
+      body: Center(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 400),
+          height: _loading ? 300 : 70,
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Hero(
+                tag: 'logo', child: Image.asset('assets/logo.png', height: 70)),
+            if (_loading) const SizedBox(height: 20),
+            FadeOut(
+                animate: !_loading,
+                child: const Center(child: CircularProgressIndicator()))
+          ]),
         ),
-        const SizedBox(height: 20),
-        if (_loading)
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
-        if (!_loading)
-          FadeOut(child: const Center(child: CircularProgressIndicator()))
-      ]),
+      ),
     );
   }
 }

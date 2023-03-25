@@ -57,7 +57,7 @@ class _SavedContentState extends State<SavedContent> {
     }
 
     if (usuario == null) {
-      return const RequestLoginScreen();
+      return RequestLoginScreen();
     } else {
       return _productos.isEmpty
           ? const Center(

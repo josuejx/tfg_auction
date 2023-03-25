@@ -65,10 +65,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //return usuario.id == null
-    //    ? const RequestLoginScreen()
-    //    : _buildLoggedInScreen();
-    return _buildLoggedInScreen();
+    return usuario.email == null
+        ? RequestLoginScreen()
+        : _buildLoggedInScreen();
   }
 
   Widget _buildLoggedInScreen() {

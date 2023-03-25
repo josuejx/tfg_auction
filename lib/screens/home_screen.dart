@@ -10,6 +10,8 @@ import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/screens/home_screens_content/bid_content.dart';
 import 'package:tfg_auction/screens/new_product_screen.dart';
 import 'package:tfg_auction/screens/profile_screen.dart';
+import 'package:tfg_auction/screens/request_login_screen.dart';
+import 'package:tfg_auction/session.dart';
 import 'package:tfg_auction/widgets/layout/auction_appbar.dart';
 import 'package:tfg_auction/widgets/layout/my_search_delegate.dart';
 
@@ -150,9 +152,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           animation: fabAnimation,
           centerAlignment: Alignment.bottomCenter,
           child: FloatingActionButton(
-              onPressed: () {
-                Get.to(() => const NewProductScreen(),
-                    transition: Transition.downToUp);
+              onPressed: () async {
+                var usuario = await Session().getSession();
+                if (usuario == null) {
+                  Get.to(
+                      () => Scaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              icon: const Icon(Icons.clear),
+                            ),
+                            elevation: 0,
+                          ),
+                          body: RequestLoginScreen(
+                            getOff: true,
+                          )),
+                      transition: Transition.downToUp);
+                } else {
+                  Get.to(() => const NewProductScreen(),
+                      transition: Transition.downToUp);
+                }
               },
               child: Container(
                 height: 50,

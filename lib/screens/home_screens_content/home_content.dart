@@ -39,7 +39,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _buildCategoryHorizontalList() {
     return SizedBox(
-      height: 100,
+      height: 90,
       width: Get.width,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -63,7 +63,8 @@ class _HomeContentState extends State<HomeContent> {
                             builder: (context, AsyncSnapshot<String> snapshot) {
                               if (snapshot.hasData) {
                                 return CircleAvatar(
-                                  radius: 30,
+                                  radius: 25,
+                                  backgroundColor: Colors.white,
                                   backgroundImage:
                                       Image.network(snapshot.data!).image,
                                 );
