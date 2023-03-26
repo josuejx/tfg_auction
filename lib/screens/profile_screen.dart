@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
 import 'package:tfg_auction/screens/request_login_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -54,8 +55,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void cargarDatos() async {
-    Usuario? sesion = await Session().getSession();
-    if (sesion != null) {
+    if (Auth().currentUser != null) {
+      var sesion = await DBUsuario().read((Auth().currentUser as User).email!);
       usuario = sesion;
       _nombreUsuarioController.text = usuario.nombreUsuario!;
       _nombreCompletoController.text = usuario.nombreCompleto!;
@@ -130,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         alignment: Alignment.centerRight,
         child: ElevatedButton(
             onPressed: () async {
-              await Session().logout();
+              await Auth().signOut();
               Get.offAll(() => HomeScreen());
             },
             style: ElevatedButton.styleFrom(
@@ -197,12 +198,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (_isThereChanges)
         ElevatedButton(
           onPressed: () async {
+            if (usuario.email != _emailController.text) {
+              await Auth().updateEmail(email: _emailController.text);
+            }
             usuario.nombreUsuario = _nombreUsuarioController.text;
             usuario.nombreCompleto = _nombreCompletoController.text;
             usuario.email = _emailController.text;
             await DBUsuario().save(usuario, _image);
-            Session().logout();
-            Session().setSession(usuario);
             setState(() {
               _isThereChanges = false;
             });

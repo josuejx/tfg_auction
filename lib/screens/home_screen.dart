@@ -2,16 +2,18 @@ import 'package:animate_do/animate_do.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/screens/home_screens_content/bid_content.dart';
 import 'package:tfg_auction/screens/new_product_screen.dart';
 import 'package:tfg_auction/screens/profile_screen.dart';
 import 'package:tfg_auction/screens/request_login_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 import 'package:tfg_auction/widgets/layout/auction_appbar.dart';
 import 'package:tfg_auction/widgets/layout/my_search_delegate.dart';
 
@@ -157,8 +159,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           centerAlignment: Alignment.bottomCenter,
           child: FloatingActionButton(
               onPressed: () async {
-                var usuario = await Session().getSession();
-                if (usuario == null) {
+                var user = Auth().currentUser;
+                if (Auth().currentUser != null) {
+                  var usuario = await DBUsuario()
+                      .read((Auth().currentUser as User).email!);
+                  Get.to(() => const NewProductScreen(),
+                      transition: Transition.downToUp);
+                } else {
                   Get.to(
                       () => Scaffold(
                           appBar: AppBar(
@@ -173,9 +180,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           body: RequestLoginScreen(
                             getOff: true,
                           )),
-                      transition: Transition.downToUp);
-                } else {
-                  Get.to(() => const NewProductScreen(),
                       transition: Transition.downToUp);
                 }
               },

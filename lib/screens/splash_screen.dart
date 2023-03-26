@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
 import 'package:tfg_auction/screens/login_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

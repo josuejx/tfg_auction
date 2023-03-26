@@ -1,12 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_archivado.dart';
 import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/archivado.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/request_login_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 import 'package:tfg_auction/widgets/product_card.dart';
 
 class SavedContent extends StatefulWidget {
@@ -29,9 +31,8 @@ class _SavedContentState extends State<SavedContent> {
   }
 
   void cargarDatos() async {
-    usuario = await Session().getSession();
-
-    if (usuario != null) {
+    if (Auth().currentUser != null) {
+      usuario = await DBUsuario().read((Auth().currentUser as User).uid);
       DBArchivado dbArchivado = DBArchivado();
       List<Archivado> archivados = await dbArchivado.readByUser(usuario!);
       for (var item in archivados) {

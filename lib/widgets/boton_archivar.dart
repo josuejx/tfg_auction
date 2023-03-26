@@ -1,10 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_archivado.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/archivado.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 
 class BotonArchivar extends StatefulWidget {
   int idProducto;
@@ -27,9 +29,10 @@ class _BotonArchivarState extends State<BotonArchivar> {
   }
 
   void cargarUsuario() async {
-    Usuario? usuario = await Session().getSession();
+    if (Auth().currentUser != null) {
+      User user = Auth().currentUser as User;
+      var usuario = await DBUsuario().read((Auth().currentUser as User).email!);
 
-    if (usuario != null) {
       Archivado archivado = await DBArchivado().read(
         usuario.email!,
         widget.idProducto,

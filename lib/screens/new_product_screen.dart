@@ -2,16 +2,18 @@ import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/product_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 
 class NewProductScreen extends StatefulWidget {
   const NewProductScreen({Key? key}) : super(key: key);
@@ -76,7 +78,8 @@ class _NewProductScreenState extends State<NewProductScreen> {
                     Get.snackbar('Error', 'Debes rellenar todos los campos',
                         colorText: Colors.white, backgroundColor: Colors.red);
                   } else {
-                    Usuario usuario = (await Session().getSession())!;
+                    Usuario usuario = await DBUsuario()
+                        .read((Auth().currentUser as User).uid);
                     //producto.idUsuario = usuario.id;
                     String result = await DBProducto().create(producto, image);
                     if (result == '') {
