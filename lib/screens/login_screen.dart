@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
 import 'package:tfg_auction/screens/password_recovery_screen.dart';
 import 'package:tfg_auction/screens/register_screen.dart';

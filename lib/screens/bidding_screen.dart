@@ -1,9 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tfg_auction/auth.dart';
+import 'package:tfg_auction/db/db_puja.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
+import 'package:tfg_auction/models/puja.dart';
 
 class BiddingScreen extends StatelessWidget {
   Producto producto;
   BiddingScreen({Key? key, required this.producto}) : super(key: key);
+
+  TextEditingController _cantidadController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +41,7 @@ class BiddingScreen extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         '${producto.precio.toString()} €',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                         ),
                       ),
@@ -53,6 +61,8 @@ class BiddingScreen extends StatelessWidget {
                         border: OutlineInputBorder(),
                         labelText: 'Cantidad',
                       ),
+                      keyboardType: TextInputType.number,
+                      controller: _cantidadController,
                     ),
                   ],
                 ),
@@ -64,7 +74,33 @@ class BiddingScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    double cantidad = double.parse(_cantidadController.text);
+                    if (cantidad > producto.precio!) {
+                      producto.precio = cantidad;
+                      var usuario = await DBUsuario()
+                          .read((Auth().currentUser as User).email!);
+                      Puja puja = Puja(
+                        idProducto: producto.id,
+                        idUsuario: usuario.email,
+                        fecha: DateTime.now(),
+                        cantidad: cantidad,
+                      );
+                      await DBPuja().save(puja);
+                      Get.back();
+                      Get.snackbar(
+                          'Puja realizada', 'Has hecho una puja de $cantidad €',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white);
+                    } else {
+                      Get.snackbar('Error',
+                          'La cantidad debe ser mayor que la puja actual',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white);
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 30,

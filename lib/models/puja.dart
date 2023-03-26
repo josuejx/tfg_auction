@@ -29,7 +29,7 @@ class Puja {
   factory Puja.fromJson(Map<String, dynamic> json) {
     return Puja(
       cantidad: json['cantidad'].toDouble(),
-      fecha: DateTime.parse(json['fecha']),
+      fecha: DateTime.fromMillisecondsSinceEpoch(json['fecha'].seconds * 1000),
       idUsuario: json['idUsuario'],
       idProducto: json['idProducto'],
     );

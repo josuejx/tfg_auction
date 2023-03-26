@@ -76,9 +76,21 @@ class _BidCardState extends State<BidCard> {
                         },
                         child: Hero(
                           tag: 'P${producto.id.toString()}',
-                          child: Image.network(
-                            producto.imagen!,
-                            width: 50,
+                          child: FutureBuilder(
+                            future: DBProducto().getImagen(producto),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Image.network(
+                                  snapshot.data!,
+                                  fit: BoxFit.cover,
+                                  width: 50,
+                                );
+                              } else {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            },
                           ),
                         ),
                       )),

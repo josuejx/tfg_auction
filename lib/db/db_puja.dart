@@ -51,4 +51,19 @@ class DBPuja {
 
     return pujas;
   }
+
+  Future<void> save(Puja puja) async {
+    final docPuja = FirebaseFirestore.instance
+        .collection('pujas')
+        .where('idUsuario', isEqualTo: puja.idUsuario)
+        .where('idProducto', isEqualTo: puja.idProducto)
+        .where('fecha', isEqualTo: puja.fecha)
+        .get();
+
+    final doc = await docPuja;
+
+    if (doc.docs.isEmpty) {
+      await FirebaseFirestore.instance.collection('pujas').add(puja.toJson());
+    }
+  }
 }

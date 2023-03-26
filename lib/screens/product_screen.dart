@@ -1,5 +1,7 @@
 import 'package:cupertino_modal_sheet/cupertino_modal_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:tfg_auction/db/db_producto.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
@@ -42,26 +44,48 @@ class _ProductScreenState extends State<ProductScreen> {
         ),
         body: ListView(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.width / 2 > 300
-                  ? 300
-                  : MediaQuery.of(context).size.width / 2,
-              child: Hero(
-                tag: 'P${widget.producto.id.toString()}',
-                child: FutureBuilder(
-                  future: dbProducto.getImagen(widget.producto),
-                  builder: (context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.hasData) {
-                      return Image.network(
-                        snapshot.data!,
-                        fit: BoxFit.cover,
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
+            InkWell(
+              onTap: () async {
+                String url = await dbProducto.getImagen(widget.producto);
+                Get.dialog(Scaffold(
+                  appBar: AppBar(
+                    leading: IconButton(
+                      icon: const Icon(Icons.clear, color: Colors.white),
+                      onPressed: () {
+                        Get.back();
+                      },
+                    ),
+                    backgroundColor: Colors.black,
+                    elevation: 0,
+                  ),
+                  body: Center(
+                    child: PhotoView(
+                      imageProvider: NetworkImage(url),
+                    ),
+                  ),
+                ));
+              },
+              child: SizedBox(
+                height: MediaQuery.of(context).size.width / 2 > 300
+                    ? 300
+                    : MediaQuery.of(context).size.width / 2,
+                child: Hero(
+                  tag: 'P${widget.producto.id.toString()}',
+                  child: FutureBuilder(
+                    future: dbProducto.getImagen(widget.producto),
+                    builder: (context, AsyncSnapshot<String> snapshot) {
+                      if (snapshot.hasData) {
+                        return Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                        );
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
