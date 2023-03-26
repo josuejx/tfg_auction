@@ -50,6 +50,8 @@ dependencies:
   firebase_core: ^2.8.0
   cloud_firestore: ^4.4.5
   firebase_storage: ^11.0.16
+  firebase_auth: ^4.3.0
+  
 dev_dependencies:
 
   # The "flutter_lints" package below contains a set of recommended lints to

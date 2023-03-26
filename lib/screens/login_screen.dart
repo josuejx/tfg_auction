@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
+import 'package:tfg_auction/screens/password_recovery_screen.dart';
+import 'package:tfg_auction/screens/register_screen.dart';
 import 'package:tfg_auction/session.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -108,12 +110,17 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 30),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => PasswordRecoveryScreen(),
+                    transition: Transition.fade);
+              },
               child: const Text('¿Olvidaste tu contraseña?'),
             ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => RegisterScreen(), transition: Transition.fade);
+              },
               child: const Text('¿No tienes cuenta? Regístrate'),
             ),
           ],
