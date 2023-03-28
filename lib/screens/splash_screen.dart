@@ -18,33 +18,34 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        _loading = false;
-      });
-      Future.delayed(const Duration(seconds: 1), () {
-        Get.offAll(() => HomeScreen());
-      });
+    Future.delayed(const Duration(seconds: 3), () {});
+
+    setState(() {
+      _loading = false;
+    });
+
+    Future.delayed(const Duration(seconds: 1), () {
+      Get.offAll(() => HomeScreen());
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          height: _loading ? 300 : 70,
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Hero(
-                tag: 'logo', child: Image.asset('assets/logo.png', height: 70)),
-            if (_loading) const SizedBox(height: 20),
-            FadeOut(
-                animate: !_loading,
-                child: const Center(child: CircularProgressIndicator()))
-          ]),
-        ),
+        body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Center(
+        child: Hero(
+            tag: 'logo', child: Image.asset('assets/logo.png', height: 70)),
       ),
-    );
+      AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        height: _loading ? 20 : 0,
+      ),
+      _loading
+          ? const CircularProgressIndicator()
+          : FadeOut(
+              duration: const Duration(milliseconds: 400),
+              child: const Center(child: CircularProgressIndicator()))
+    ]));
   }
 }
