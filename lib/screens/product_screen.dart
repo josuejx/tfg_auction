@@ -2,6 +2,7 @@ import 'package:cupertino_modal_sheet/cupertino_modal_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:tfg_auction/auth.dart';
 import 'package:tfg_auction/db/db_producto.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
@@ -159,6 +160,14 @@ class _ProductScreenState extends State<ProductScreen> {
                     alignment: Alignment.center,
                     child: ElevatedButton(
                         onPressed: () {
+                          if (Auth().currentUser == null) {
+                            Get.snackbar(
+                                'Aviso', 'Debes iniciar sesión para pujar',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.blue,
+                                colorText: Colors.white);
+                            return;
+                          }
                           showCupertinoModalSheet(
                             context: context,
                             builder: (context) =>

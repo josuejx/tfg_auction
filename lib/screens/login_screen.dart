@@ -79,6 +79,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 });
 
                 try {
+                  Get.dialog(
+                    const AlertDialog(
+                      content: Text('Iniciando sesión...'),
+                    ),
+                    barrierDismissible: false,
+                  );
                   await Auth().signInWithEmailAndPassword(
                       email: _emailController.text,
                       password: _passwordController.text);
@@ -98,14 +104,12 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               style: ElevatedButton.styleFrom(
                 fixedSize: Size(
-                    MediaQuery.of(context).size.width * 0.2 > 120
-                        ? MediaQuery.of(context).size.width * 0.2
+                    MediaQuery.of(context).size.width * 0.4 > 120
+                        ? MediaQuery.of(context).size.width * 0.4
                         : 120,
                     40),
               ),
-              child: _loading
-                  ? const CircularProgressIndicator()
-                  : const Text('Iniciar Sesión'),
+              child: const Text('Iniciar Sesión'),
             ),
             const SizedBox(height: 30),
             TextButton(

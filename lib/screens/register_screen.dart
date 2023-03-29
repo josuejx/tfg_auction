@@ -56,8 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       InkWell(
         onTap: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
-            type: FileType.custom,
-            allowedExtensions: ['jpg', 'png', 'jpeg'],
+            type: FileType.image,
           );
           if (result != null) {
             setState(() {
@@ -180,9 +179,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               email: _emailController.text);
 
           try {
+            Get.dialog(const Center(child: CircularProgressIndicator()),
+                barrierDismissible: false);
             await Auth().createUserWithEmailAndPassword(
                 email: usuario.email!, password: _passwordController.text);
             await DBUsuario().save(usuario, _image);
+            Get.back();
             Get.snackbar("Registro completado",
                 "Usuario creado correctamente, ya puede iniciar sesión",
                 backgroundColor: Colors.green, colorText: Colors.white);

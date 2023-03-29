@@ -2,8 +2,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
-import 'package:tfg_auction/screens/login_screen.dart';
-import 'package:tfg_auction/auth.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,14 +16,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {});
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        _loading = false;
+      });
 
-    setState(() {
-      _loading = false;
-    });
-
-    Future.delayed(const Duration(seconds: 1), () {
-      Get.offAll(() => HomeScreen());
+      Future.delayed(const Duration(seconds: 1), () {
+        Get.offAll(() => HomeScreen());
+      });
     });
   }
 
