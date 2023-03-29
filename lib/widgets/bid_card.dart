@@ -37,6 +37,7 @@ class _BidCardState extends State<BidCard> {
     producto = await dbProducto.read(widget.puja.idProducto!);
     DBPuja dbPuja = DBPuja();
     pujas = await dbPuja.readAllByProduct(widget.puja.idProducto!);
+    pujas.sort((a, b) => b.cantidad!.compareTo(a.cantidad!));
     DBUsuario dbUsuario = DBUsuario();
     for (var puja in pujas) {
       Usuario? usuario = await dbUsuario.read(puja.idUsuario!);
@@ -126,7 +127,10 @@ class _BidCardState extends State<BidCard> {
                       children: [
                         for (int i = 0; i < pujas.length; i++)
                           ListTile(
-                            title: Text(usuarios[i].nombreUsuario.toString()),
+                            title: usuarios[i].email == widget.usuario.email
+                                ? Text(usuarios[i].nombreUsuario.toString())
+                                : Text(usuarios[i].nombreUsuario.toString(),
+                                    style: const TextStyle(color: Colors.blue)),
                             subtitle: Text(pujas[i].fecha.toString()),
                             trailing: Text('${pujas[i].cantidad.toString()}€'),
                           ),

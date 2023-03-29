@@ -115,6 +115,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
 
   List<Widget> _buildFormProduct() {
     return [
+      const SizedBox(height: 20.0),
       // Imagen
       InkWell(
         onTap: () async {
