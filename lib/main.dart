@@ -38,6 +38,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        brightness: Brightness.light,
         appBarTheme: const AppBarTheme(
           color: Colors.white,
           elevation: 5,

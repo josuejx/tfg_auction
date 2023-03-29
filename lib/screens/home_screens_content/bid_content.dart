@@ -28,8 +28,18 @@ class _BidContentState extends State<BidContent> {
 
   void cargarDatos() async {
     if (Auth().currentUser != null) {
-      usuario = await DBUsuario().read((Auth().currentUser as User).uid);
+      usuario = await DBUsuario().read((Auth().currentUser as User).email!);
       pujas = await DBPuja().readAllByUser(usuario!);
+
+      // quitar pujas que sean del mismo idProducto
+      for (var i = 0; i < pujas.length; i++) {
+        for (var j = i + 1; j < pujas.length; j++) {
+          if (pujas[i].idProducto == pujas[j].idProducto) {
+            pujas.removeAt(j);
+            j--;
+          }
+        }
+      }
     }
     setState(() {
       cargando = false;

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -90,132 +91,144 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   List<Widget> _buildFormProfile() {
     return [
-      Container(
-        width: 128.0,
-        height: 128.0,
-        margin: const EdgeInsets.only(
-          top: 24.0,
-          bottom: 64.0,
-        ),
-        clipBehavior: Clip.antiAlias,
-        decoration: const BoxDecoration(
-          color: Colors.black26,
-          shape: BoxShape.circle,
-        ),
-        child: InkWell(
-            onTap: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles(
-                type: FileType.custom,
-                allowedExtensions: ['jpg', 'png', 'jpeg'],
-              );
-              if (result != null) {
-                setState(() {
-                  _image = File(result.files.single.path!);
-                });
-              }
-              checkChanges();
-            },
-            child: FutureBuilder(
-              future: getUserImage(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return snapshot.data as Widget;
-                } else {
-                  return const Icon(Icons.account_circle_rounded,
-                      color: Colors.white, size: 128.0);
+      ZoomIn(
+        child: Container(
+          width: 128.0,
+          height: 128.0,
+          margin: const EdgeInsets.only(
+            top: 24.0,
+            bottom: 64.0,
+          ),
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(
+            color: Colors.black26,
+            shape: BoxShape.circle,
+          ),
+          child: InkWell(
+              onTap: () async {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['jpg', 'png', 'jpeg'],
+                );
+                if (result != null) {
+                  setState(() {
+                    _image = File(result.files.single.path!);
+                  });
                 }
+                checkChanges();
               },
-            )),
+              child: FutureBuilder(
+                future: getUserImage(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data as Widget;
+                  } else {
+                    return const Icon(Icons.account_circle_rounded,
+                        color: Colors.white, size: 128.0);
+                  }
+                },
+              )),
+        ),
       ),
-      Align(
-        alignment: Alignment.centerRight,
-        child: ElevatedButton(
+      FadeInRight(
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: ElevatedButton(
+              onPressed: () async {
+                await Auth().signOut();
+                Get.offAll(() => HomeScreen());
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                primary: Colors.red,
+                fixedSize: const Size(50, 50),
+              ),
+              child: const Icon(Icons.logout)),
+        ),
+      ),
+      const SizedBox(height: 20),
+      FadeInLeft(
+        child: TextFormField(
+          decoration: const InputDecoration(
+            labelText: 'Nombre de usuario',
+            hintText: 'Nombre de usuario',
+          ),
+          controller: _nombreUsuarioController,
+          onChanged: (value) {
+            checkChanges();
+          },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, introduzca un nombre de usuario';
+            }
+            return null;
+          },
+        ),
+      ),
+      const SizedBox(height: 20),
+      FadeInLeft(
+        child: TextFormField(
+          decoration: const InputDecoration(
+            labelText: 'Nombre completo',
+            hintText: 'Nombre completo',
+          ),
+          controller: _nombreCompletoController,
+          onChanged: (value) {
+            checkChanges();
+          },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, introduzca un nombre';
+            }
+            return null;
+          },
+        ),
+      ),
+      const SizedBox(height: 20),
+      FadeInLeft(
+        child: TextFormField(
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            hintText: 'Email',
+          ),
+          controller: _emailController,
+          onChanged: (value) {
+            checkChanges();
+          },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, introduzca un email';
+            }
+            return null;
+          },
+        ),
+      ),
+      const SizedBox(height: 20),
+      if (_isThereChanges)
+        FadeIn(
+          child: ElevatedButton(
             onPressed: () async {
-              await Auth().signOut();
-              Get.offAll(() => HomeScreen());
+              if (usuario.email != _emailController.text) {
+                await Auth().updateEmail(email: _emailController.text);
+              }
+              usuario.nombreUsuario = _nombreUsuarioController.text;
+              usuario.nombreCompleto = _nombreCompletoController.text;
+              usuario.email = _emailController.text;
+              await DBUsuario().save(usuario, _image);
+              setState(() {
+                _isThereChanges = false;
+              });
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              primary: Colors.red,
-              fixedSize: const Size(50, 50),
+              fixedSize: const Size(200, 50),
             ),
-            child: const Icon(Icons.logout)),
-      ),
-      const SizedBox(height: 20),
-      TextFormField(
-        decoration: const InputDecoration(
-          labelText: 'Nombre de usuario',
-          hintText: 'Nombre de usuario',
-        ),
-        controller: _nombreUsuarioController,
-        onChanged: (value) {
-          checkChanges();
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Por favor, introduzca un nombre de usuario';
-          }
-          return null;
-        },
-      ),
-      const SizedBox(height: 20),
-      TextFormField(
-        decoration: const InputDecoration(
-          labelText: 'Nombre completo',
-          hintText: 'Nombre completo',
-        ),
-        controller: _nombreCompletoController,
-        onChanged: (value) {
-          checkChanges();
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Por favor, introduzca un nombre';
-          }
-          return null;
-        },
-      ),
-      const SizedBox(height: 20),
-      TextFormField(
-        decoration: const InputDecoration(
-          labelText: 'Email',
-          hintText: 'Email',
-        ),
-        controller: _emailController,
-        onChanged: (value) {
-          checkChanges();
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Por favor, introduzca un email';
-          }
-          return null;
-        },
-      ),
-      const SizedBox(height: 20),
-      if (_isThereChanges)
-        ElevatedButton(
-          onPressed: () async {
-            if (usuario.email != _emailController.text) {
-              await Auth().updateEmail(email: _emailController.text);
-            }
-            usuario.nombreUsuario = _nombreUsuarioController.text;
-            usuario.nombreCompleto = _nombreCompletoController.text;
-            usuario.email = _emailController.text;
-            await DBUsuario().save(usuario, _image);
-            setState(() {
-              _isThereChanges = false;
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            fixedSize: const Size(200, 50),
+            child: const Text('Guardar', style: TextStyle(fontSize: 20)),
           ),
-          child: const Text('Guardar', style: TextStyle(fontSize: 20)),
         )
     ];
   }

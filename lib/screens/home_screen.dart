@@ -68,6 +68,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
+    _hideBottomBarAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _hideBottomBarAnimationController.forward();
+
     _bottomNavIndex = widget.index;
 
     _fabAnimationController = AnimationController(
@@ -92,11 +98,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       borderRadiusCurve,
     );
 
-    _hideBottomBarAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => _hideBottomBarAnimationController.reverse(),
     );
-
     Future.delayed(
       const Duration(seconds: 1),
       () => _fabAnimationController.forward(),
@@ -151,7 +156,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      //bottomNavigationBar: AuctiOnBottomBar(),
       floatingActionButton: AnimatedBuilder(
         animation: _fabAnimationController,
         builder: (context, child) => CircularRevealAnimation(

@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -64,7 +65,9 @@ class _ProductsGridState extends State<ProductsGrid> {
             padding: const EdgeInsets.all(20),
             shrinkWrap: true,
             children: [
-              ..._productos.map((e) => ProductCard(producto: e)).toList(),
+              ..._productos
+                  .map((e) => ZoomIn(child: ProductCard(producto: e)))
+                  .toList(),
             ],
           );
   }

@@ -51,7 +51,6 @@ class _BidCardState extends State<BidCard> {
         child: producto.id == null
             ? const ListTile(
                 title: Text("Cargando..."),
-                trailing: CircularProgressIndicator(),
               )
             : Column(
                 children: [
