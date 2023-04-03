@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/usuario.dart';
@@ -53,6 +54,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   List<Widget> registerFormWidgets() {
     return [
+      const SizedBox(height: 10),
+      if (!GetPlatform.isIOS)
+        ElevatedButton.icon(
+            onPressed: () async {
+              await Auth().googleSignUp();
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            icon: const FaIcon(FontAwesomeIcons.google, color: Colors.red),
+            label: const Text('Registrarse con Google')),
+      if (!GetPlatform.isIOS) const SizedBox(height: 10),
+      if (!GetPlatform.isIOS)
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(right: 10.0),
+                child: const Divider(
+                  color: Colors.black,
+                  height: 36,
+                ),
+              ),
+            ),
+            const Text('O'),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 10.0),
+                child: const Divider(
+                  color: Colors.black,
+                  height: 36,
+                ),
+              ),
+            ),
+          ],
+        ),
+      const SizedBox(height: 10),
       InkWell(
         onTap: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
