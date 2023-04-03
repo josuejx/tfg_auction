@@ -57,18 +57,7 @@ class _BidCardState extends State<BidCard> {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            expanded = !expanded;
-                          });
-                        },
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        icon: expanded
-                            ? const Icon(Icons.expand_less)
-                            : const Icon(Icons.expand_more),
-                      ),
-                      Flexible(
+                      Expanded(
                           child: InkWell(
                         onTap: () {
                           Get.to(() => ProductScreen(producto: producto),
@@ -80,10 +69,16 @@ class _BidCardState extends State<BidCard> {
                             future: DBProducto().getImagen(producto),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                return Image.network(
-                                  snapshot.data!,
-                                  fit: BoxFit.cover,
-                                  width: 50,
+                                // rounded image
+                                return Container(
+                                  height: 130,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(snapshot.data!),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 );
                               } else {
                                 return const Center(
@@ -103,6 +98,21 @@ class _BidCardState extends State<BidCard> {
                           title: Text(producto.nombre!),
                           subtitle: Text("Inicial: ${producto.precio}€"),
                         ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            expanded = !expanded;
+                          });
+                        },
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        icon: expanded
+                            ? const Icon(Icons.expand_less)
+                            : const Icon(Icons.expand_more),
                       ),
                       Expanded(
                         child: ListTile(
