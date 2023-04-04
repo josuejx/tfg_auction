@@ -118,15 +118,15 @@ class _BidCardState extends State<BidCard> {
                         child: ListTile(
                           title: Text("Pujas: ${pujas.length}"),
                           subtitle:
-                              Text("Última puja: ${pujas.last.cantidad}€"),
+                              Text("Última puja: ${pujas.first.cantidad}€"),
                         ),
                       ),
-                      if (usuarios.last.email != null &&
+                      if (usuarios.first.email != null &&
                           producto.finalizacion!.isBefore(DateTime.now()))
                         Expanded(
                           child: ListTile(
                             title: const Text("Ganador de la puja:"),
-                            subtitle: Text(usuarios.last.nombreUsuario!),
+                            subtitle: Text(usuarios.first.nombreUsuario!),
                           ),
                         ),
                     ],
@@ -141,7 +141,8 @@ class _BidCardState extends State<BidCard> {
                                 ? Text(usuarios[i].nombreUsuario.toString())
                                 : Text(usuarios[i].nombreUsuario.toString(),
                                     style: const TextStyle(color: Colors.blue)),
-                            subtitle: Text(pujas[i].fecha.toString()),
+                            subtitle: Text(pujas[i].fecha.toString().substring(
+                                0, pujas[i].fecha.toString().length - 7)),
                             trailing: Text('${pujas[i].cantidad.toString()}€'),
                           ),
                       ],

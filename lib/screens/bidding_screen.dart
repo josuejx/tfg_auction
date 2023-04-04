@@ -9,7 +9,10 @@ import 'package:tfg_auction/models/puja.dart';
 
 class BiddingScreen extends StatelessWidget {
   Producto producto;
-  BiddingScreen({Key? key, required this.producto}) : super(key: key);
+  double ultimaPuja = 0;
+
+  BiddingScreen({Key? key, required this.producto, required this.ultimaPuja})
+      : super(key: key);
 
   TextEditingController _cantidadController = TextEditingController();
 
@@ -40,10 +43,11 @@ class BiddingScreen extends StatelessWidget {
                     Align(
                       alignment: Alignment.center,
                       child: Text(
-                        '${producto.precio.toString()} €',
+                        '${ultimaPuja.toString()} €',
                         style: const TextStyle(
-                          fontSize: 16,
-                        ),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue),
                       ),
                     ),
                     // Campo para introducir la cantidad de la puja

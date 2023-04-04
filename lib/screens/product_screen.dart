@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:tfg_auction/auth.dart';
 import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/db/db_puja.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
+import 'package:tfg_auction/models/puja.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/bidding_screen.dart';
 
@@ -20,9 +22,11 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   DBProducto dbProducto = DBProducto();
-
   DBUsuario dbUsuario = DBUsuario();
+  DBPuja dbPuja = DBPuja();
+
   Usuario usuario = Usuario();
+  List<Puja> pujas = [];
 
   @override
   void initState() {
@@ -32,8 +36,11 @@ class _ProductScreenState extends State<ProductScreen> {
 
   void cargarDatos() async {
     final usuarioLeido = await dbUsuario.read(widget.producto.idUsuario!);
+    final pujasLeidas = await dbPuja.readAllByProduct(widget.producto.id!);
     setState(() {
       usuario = usuarioLeido;
+      pujas = pujasLeidas;
+      pujas.sort((a, b) => b.cantidad!.compareTo(a.cantidad!));
     });
   }
 
@@ -121,25 +128,46 @@ class _ProductScreenState extends State<ProductScreen> {
                         ),
                       ),
                       const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          'Termina el ${widget.producto.finalizacion!.day}/${widget.producto.finalizacion!.month}/${widget.producto.finalizacion!.year}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: MediaQuery.of(context).size.width / 50 <
-                                    14
-                                ? 14
-                                : (MediaQuery.of(context).size.width / 50 > 25
-                                    ? 25
-                                    : MediaQuery.of(context).size.width / 50),
+                      if (widget.producto.finalizacion!.isAfter(DateTime.now()))
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            'Termina el ${widget.producto.finalizacion!.day}/${widget.producto.finalizacion!.month}/${widget.producto.finalizacion!.year}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: MediaQuery.of(context).size.width / 50 <
+                                      14
+                                  ? 14
+                                  : (MediaQuery.of(context).size.width / 50 > 25
+                                      ? 25
+                                      : MediaQuery.of(context).size.width / 50),
+                            ),
+                          ),
+                        )
+                      else
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            'Finalizado',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: MediaQuery.of(context).size.width / 50 <
+                                      14
+                                  ? 14
+                                  : (MediaQuery.of(context).size.width / 50 > 25
+                                      ? 25
+                                      : MediaQuery.of(context).size.width / 50),
+                            ),
                           ),
                         ),
-                      )
                     ],
                   ),
                   const Divider(),
@@ -155,7 +183,21 @@ class _ProductScreenState extends State<ProductScreen> {
                               : MediaQuery.of(context).size.width / 40),
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const Divider(),
+                  Text(
+                    'Historial de pujas',
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width / 40 < 16
+                          ? 16
+                          : (MediaQuery.of(context).size.width / 40 > 32
+                              ? 32
+                              : MediaQuery.of(context).size.width / 40),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 400, child: _buildHistorialPujas()),
+                  const SizedBox(height: 30),
+                  const Divider(),
                   Align(
                     alignment: Alignment.center,
                     child: ElevatedButton(
@@ -168,10 +210,18 @@ class _ProductScreenState extends State<ProductScreen> {
                                 colorText: Colors.white);
                             return;
                           }
+                          double ultimaPuja = 0;
+                          if (pujas != []) {
+                            ultimaPuja = pujas.first.cantidad!;
+                          } else {
+                            ultimaPuja = widget.producto.precio!;
+                          }
                           showCupertinoModalSheet(
                             context: context,
-                            builder: (context) =>
-                                BiddingScreen(producto: widget.producto),
+                            builder: (context) => BiddingScreen(
+                              producto: widget.producto,
+                              ultimaPuja: ultimaPuja,
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -257,6 +307,65 @@ class _ProductScreenState extends State<ProductScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHistorialPujas() {
+    if (pujas.isEmpty) {
+      return const Center(
+        child: Text('No hay pujas'),
+      );
+    }
+    return ListView.builder(
+      itemCount: pujas.length,
+      itemBuilder: (context, index) {
+        return FutureBuilder(
+          future: dbUsuario.read(pujas[index].idUsuario!),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return ListTile(
+                title: Text(
+                  snapshot.data!.nombreUsuario!,
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width / 50 < 14
+                        ? 14
+                        : (MediaQuery.of(context).size.width / 50 > 22
+                            ? 22
+                            : MediaQuery.of(context).size.width / 50),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Text(
+                  pujas[index].fecha.toString().substring(0, 19),
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width / 50 < 14
+                        ? 14
+                        : (MediaQuery.of(context).size.width / 50 > 22
+                            ? 22
+                            : MediaQuery.of(context).size.width / 50),
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                trailing: Text(
+                  '${pujas[index].cantidad.toString()} €',
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width / 50 < 14
+                        ? 14
+                        : (MediaQuery.of(context).size.width / 50 > 22
+                            ? 22
+                            : MediaQuery.of(context).size.width / 50),
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            } else {
+              return const SizedBox();
+            }
+          },
+        );
+      },
     );
   }
 }

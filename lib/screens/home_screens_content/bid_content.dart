@@ -41,6 +41,8 @@ class _BidContentState extends State<BidContent> {
         }
       }
     }
+
+    pujas.sort((a, b) => b.cantidad!.compareTo(a.cantidad!));
     setState(() {
       cargando = false;
     });
