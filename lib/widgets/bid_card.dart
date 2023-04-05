@@ -6,6 +6,7 @@ import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/puja.dart';
 import 'package:tfg_auction/models/usuario.dart';
+import 'package:tfg_auction/screens/payment_screen.dart';
 import 'package:tfg_auction/screens/product_screen.dart';
 
 class BidCard extends StatefulWidget {
@@ -90,17 +91,60 @@ class _BidCardState extends State<BidCard> {
                         ),
                       )),
                       Expanded(
-                        child: ListTile(
-                          onTap: () {
-                            Get.to(() => ProductScreen(producto: producto),
-                                transition: Transition.zoom);
-                          },
-                          title: Text(producto.nombre!),
-                          subtitle: Text("Inicial: ${producto.precio}€"),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              onTap: () {
+                                Get.to(() => ProductScreen(producto: producto),
+                                    transition: Transition.zoom);
+                              },
+                              title: Text(producto.nombre!),
+                              subtitle: Text("Inicial: ${producto.precio}€"),
+                            ),
+                            if (producto.finalizacion!.isAfter(DateTime.now()))
+                              Card(
+                                color: Colors.blue,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Finaliza en: ${producto.finalizacion!.difference(DateTime.now()).inDays} días",
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            if (producto.finalizacion!.isBefore(DateTime.now()))
+                              const Card(
+                                color: Colors.red,
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Finalizado",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ],
                   ),
+                  if (producto.finalizacion!.isBefore(DateTime.now()) &&
+                      usuarios.first.email == widget.usuario.email) ...[
+                    const Divider(),
+                    const Text(
+                      "¡Enhorabuena! Has ganado la puja",
+                      style: TextStyle(color: Colors.green, fontSize: 20),
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Get.to(() => PaymentScreen(
+                              producto: producto, usuario: widget.usuario));
+                        },
+                        child: const Text("Pasar por caja")),
+                    const Divider()
+                  ],
                   Row(
                     children: [
                       IconButton(
@@ -137,7 +181,7 @@ class _BidCardState extends State<BidCard> {
                       children: [
                         for (int i = 0; i < pujas.length; i++)
                           ListTile(
-                            title: usuarios[i].email == widget.usuario.email
+                            title: usuarios[i].email != widget.usuario.email
                                 ? Text(usuarios[i].nombreUsuario.toString())
                                 : Text(usuarios[i].nombreUsuario.toString(),
                                     style: const TextStyle(color: Colors.blue)),
