@@ -116,4 +116,41 @@ class DBProducto {
 
     return url;
   }
+
+  Future pagar(Producto producto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('id', isEqualTo: producto.id)
+        .get();
+
+    final doc = await docProducto;
+
+    doc.docs.forEach((element) {
+      FirebaseFirestore.instance
+          .collection('productos')
+          .doc(element.id)
+          .update({'pagado': true});
+    });
+  }
+
+  Future<bool> isPagado(Producto producto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('id', isEqualTo: producto.id)
+        .get();
+
+    final doc = await docProducto;
+
+    final productos = <bool>[];
+
+    doc.docs.forEach((element) {
+      if (element.data()['pagado'] != null) {
+        productos.add(element.data()['pagado']);
+      }
+    });
+
+    bool pagado = productos.isEmpty ? false : productos[0];
+
+    return pagado;
+  }
 }

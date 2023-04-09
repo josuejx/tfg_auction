@@ -26,6 +26,7 @@ class _BidCardState extends State<BidCard> {
   List<Usuario> usuarios = [];
 
   bool expanded = false;
+  bool pagado = false;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _BidCardState extends State<BidCard> {
   void cargarDatos() async {
     DBProducto dbProducto = DBProducto();
     producto = await dbProducto.read(widget.puja.idProducto!);
+    pagado = await dbProducto.isPagado(producto);
     DBPuja dbPuja = DBPuja();
     pujas = await dbPuja.readAllByProduct(widget.puja.idProducto!);
     pujas.sort((a, b) => b.cantidad!.compareTo(a.cantidad!));
@@ -131,7 +133,8 @@ class _BidCardState extends State<BidCard> {
                     ],
                   ),
                   if (producto.finalizacion!.isBefore(DateTime.now()) &&
-                      usuarios.first.email == widget.usuario.email) ...[
+                      usuarios.first.email == widget.usuario.email &&
+                      !pagado) ...[
                     const Divider(),
                     const Text(
                       "¡Enhorabuena! Has ganado la puja",
@@ -143,6 +146,18 @@ class _BidCardState extends State<BidCard> {
                               producto: producto, usuario: widget.usuario));
                         },
                         child: const Text("Pasar por caja")),
+                    const Divider()
+                  ],
+                  if (producto.finalizacion!.isBefore(DateTime.now()) &&
+                      usuarios.first.email == widget.usuario.email &&
+                      pagado) ...[
+                    const Divider(),
+                    const Text(
+                      "Puja pagada",
+                      style: TextStyle(color: Colors.green, fontSize: 20),
+                    ),
+                    const Icon(Icons.check_circle,
+                        color: Colors.green, size: 50),
                     const Divider()
                   ],
                   Row(
