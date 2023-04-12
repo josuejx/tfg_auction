@@ -219,7 +219,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Usuario usuario = Usuario(
               nombreUsuario: _nombreUsuarioController.text,
               nombreCompleto: _nombreCompletoController.text,
-              email: _emailController.text);
+              email: _emailController.text,
+              fiabilidad: 0);
 
           try {
             Get.dialog(const Center(child: CircularProgressIndicator()),

@@ -3,12 +3,14 @@ class Usuario {
   String? nombreCompleto;
   String? email;
   String? token;
+  double? fiabilidad;
 
   Usuario({
     this.nombreUsuario,
     this.nombreCompleto,
     this.email,
     this.token,
+    this.fiabilidad,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
@@ -16,6 +18,7 @@ class Usuario {
         nombreCompleto: json["nombreCompleto"],
         email: json["email"],
         token: json["token"],
+        fiabilidad: json["fiabilidad"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -23,6 +26,7 @@ class Usuario {
         "nombreCompleto": nombreCompleto,
         "email": email,
         "token": token,
+        "fiabilidad": fiabilidad,
       };
 
   @override
