@@ -66,4 +66,43 @@ class DBPuja {
       await FirebaseFirestore.instance.collection('pujas').add(puja.toJson());
     }
   }
+
+  Future<void> deleteByProducto(int idProducto) async {
+    final docPuja = FirebaseFirestore.instance
+        .collection('pujas')
+        .where('idProducto', isEqualTo: idProducto)
+        .get();
+
+    final doc = await docPuja;
+
+    if (doc.docs.isNotEmpty) {
+      await FirebaseFirestore.instance
+          .collection('pujas')
+          .doc(doc.docs.first.id)
+          .delete();
+    }
+  }
+
+  Future<void> deleteGanador(int idProducto) async {
+    var pujas = await readAllByProduct(idProducto);
+    String idUsuario = pujas
+        .reduce((value, element) =>
+            value.cantidad! > element.cantidad! ? value : element)
+        .idUsuario!;
+
+    final docPuja = FirebaseFirestore.instance
+        .collection('pujas')
+        .where('idProducto', isEqualTo: idProducto)
+        .where('idUsuario', isEqualTo: idUsuario)
+        .get();
+
+    final doc = await docPuja;
+
+    if (doc.docs.isNotEmpty) {
+      await FirebaseFirestore.instance
+          .collection('pujas')
+          .doc(doc.docs.first.id)
+          .delete();
+    }
+  }
 }

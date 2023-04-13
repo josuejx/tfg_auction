@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/usuario.dart';
 
@@ -22,8 +23,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
     // simulate payment process 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      DBProducto().pagar(widget.producto);
+    Future.delayed(const Duration(seconds: 3), () async {
+      await DBProducto().pagar(widget.producto);
+      await DBUsuario().puntuacionUsuario(widget.usuario);
+
       setState(() {
         payed = true;
       });

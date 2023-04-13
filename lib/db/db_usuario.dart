@@ -100,7 +100,7 @@ class DBUsuario {
 
     double mediaPujasProducto = pujasUsuario.length / productosPujados.length;
 
-    if (productosPagados.isNotEmpty) {
+    if (mediaPujasProducto > 0 && productosGanados.isNotEmpty) {
       fiabilidad = (productosPagados.length) /
           (mediaPujasProducto *
               (productosGanados.length - productosPagados.length));

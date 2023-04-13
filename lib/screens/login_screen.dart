@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
+import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
 import 'package:tfg_auction/screens/password_recovery_screen.dart';
 import 'package:tfg_auction/screens/register_screen.dart';
@@ -89,6 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   await Auth().signInWithEmailAndPassword(
                       email: _emailController.text,
                       password: _passwordController.text);
+
+                  Usuario usuario =
+                      await DBUsuario().read(_emailController.text);
+                  await DBUsuario().puntuacionUsuario(usuario);
 
                   Get.offAll(() => HomeScreen(), transition: Transition.fade);
                   Get.snackbar(

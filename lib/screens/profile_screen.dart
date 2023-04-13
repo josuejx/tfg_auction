@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
+import 'package:tfg_auction/screens/my_products_screen.dart';
 import 'package:tfg_auction/screens/request_login_screen.dart';
 import 'package:tfg_auction/auth.dart';
 
@@ -148,6 +149,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: const Icon(Icons.logout)),
         ),
       ),
+      const SizedBox(height: 20),
+      FadeInLeft(
+          child: ElevatedButton(
+        onPressed: () => Get.to(() => MyProductsScreen(
+              usuario: usuario,
+            )),
+        child: const Text('Mis productos'),
+      )),
       const SizedBox(height: 20),
       FadeInLeft(
         child: TextFormField(

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tfg_auction/db/db_puja.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/usuario.dart';
 
@@ -152,5 +153,23 @@ class DBProducto {
     bool pagado = productos.isEmpty ? false : productos[0];
 
     return pagado;
+  }
+
+  Future delete(Producto producto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('id', isEqualTo: producto.id)
+        .get();
+
+    final doc = await docProducto;
+
+    await DBPuja().deleteByProducto(producto.id!);
+
+    doc.docs.forEach((element) {
+      FirebaseFirestore.instance
+          .collection('productos')
+          .doc(element.id)
+          .delete();
+    });
   }
 }
