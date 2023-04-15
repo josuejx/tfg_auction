@@ -14,7 +14,7 @@ class BiddingScreen extends StatelessWidget {
   BiddingScreen({Key? key, required this.producto, required this.ultimaPuja})
       : super(key: key);
 
-  TextEditingController _cantidadController = TextEditingController();
+  final TextEditingController _cantidadController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +79,21 @@ class BiddingScreen extends StatelessWidget {
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   onPressed: () async {
+                    var usuario = await DBUsuario()
+                        .read((Auth().currentUser as User).email!);
                     double cantidad = double.parse(_cantidadController.text);
-                    if (cantidad > producto.precio!) {
+
+                    if (cantidad > 300 && usuario.fiabilidad! < 50) {
+                      Get.snackbar('Error',
+                          'No puedes pujar porque tu fiabilidad es menor que 50%',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white);
+                      return;
+                    }
+
+                    if (cantidad > producto.precio! && cantidad > ultimaPuja) {
                       producto.precio = cantidad;
-                      var usuario = await DBUsuario()
-                          .read((Auth().currentUser as User).email!);
                       Puja puja = Puja(
                         idProducto: producto.id,
                         idUsuario: usuario.email,

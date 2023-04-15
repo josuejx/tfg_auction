@@ -40,47 +40,55 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _buildCategoryHorizontalList() {
     return SizedBox(
-      height: 90,
+      height: 87,
       width: Get.width,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: categorias
             .map((categoria) => FadeInDown(
                   from: 30,
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        InkWell(
-                            onTap: () {
-                              Get.to(
-                                  () => ProductsGridScreen(
-                                        titulo: categoria.nombre!,
-                                        filtrarPor: FiltrarPor.Categoria,
-                                        filtro: categoria.id.toString(),
-                                      ),
-                                  transition: Transition.cupertino);
-                            },
-                            child: FutureBuilder(
-                              future: DBCategoria().getImagen(categoria),
-                              builder:
-                                  (context, AsyncSnapshot<String> snapshot) {
-                                if (snapshot.hasData) {
-                                  return CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.white,
-                                    backgroundImage:
-                                        Image.network(snapshot.data!).image,
-                                  );
-                                } else {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      width: 80,
+                      child: Column(
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                Get.to(
+                                    () => ProductsGridScreen(
+                                          titulo: categoria.nombre!,
+                                          filtrarPor: FiltrarPor.Categoria,
+                                          filtro: categoria.id.toString(),
+                                        ),
+                                    transition: Transition.cupertino);
                               },
-                            )),
-                        Text(categoria.nombre!)
-                      ],
+                              child: FutureBuilder(
+                                future: DBCategoria().getImagen(categoria),
+                                builder:
+                                    (context, AsyncSnapshot<String> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.white,
+                                      backgroundImage:
+                                          Image.network(snapshot.data!).image,
+                                    );
+                                  } else {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                },
+                              )),
+                          Text(
+                            categoria.nombre!,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ))

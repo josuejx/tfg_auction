@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/puja.dart';
 import 'package:tfg_auction/models/usuario.dart';
@@ -85,15 +88,14 @@ class DBPuja {
 
   Future<void> deleteGanador(int idProducto) async {
     var pujas = await readAllByProduct(idProducto);
-    String idUsuario = pujas
-        .reduce((value, element) =>
-            value.cantidad! > element.cantidad! ? value : element)
-        .idUsuario!;
+    var ultimaPuja = pujas.reduce((value, element) =>
+        value.cantidad! > element.cantidad! ? value : element);
 
     final docPuja = FirebaseFirestore.instance
         .collection('pujas')
-        .where('idProducto', isEqualTo: idProducto)
-        .where('idUsuario', isEqualTo: idUsuario)
+        .where('idUsuario', isEqualTo: ultimaPuja.idUsuario)
+        .where('idProducto', isEqualTo: ultimaPuja.idProducto)
+        .where('fecha', isEqualTo: ultimaPuja.fecha)
         .get();
 
     final doc = await docPuja;
@@ -104,5 +106,9 @@ class DBPuja {
           .doc(doc.docs.first.id)
           .delete();
     }
+
+    Usuario usuario = await DBUsuario().read(ultimaPuja.idUsuario!);
+    usuario.subastasGanadasNoPagadas = usuario.subastasGanadasNoPagadas! + 1;
+    await DBUsuario().save(usuario, File(''));
   }
 }

@@ -96,14 +96,30 @@ class DBUsuario {
       }
     }
 
-    double fiabilidad = 0;
+    double fiabilidad = usuario.fiabilidad!;
 
     double mediaPujasProducto = pujasUsuario.length / productosPujados.length;
 
-    if (mediaPujasProducto > 0 && productosGanados.isNotEmpty) {
-      fiabilidad = (productosPagados.length) /
-          (mediaPujasProducto *
-              (productosGanados.length - productosPagados.length));
+    if (usuario.subastasGanadasNoPagadas! > 0) {
+      fiabilidad -= 5 * usuario.subastasGanadasNoPagadas!;
+    } else if (productosPagados.isNotEmpty) {
+      fiabilidad += 3 * productosPagados.length;
+    } else if (productosGanados.isNotEmpty) {
+      fiabilidad += 1 * productosGanados.length;
+    } else if (productosPujados.isNotEmpty) {
+      fiabilidad += 0.1 * productosPujados.length;
+    } else if (mediaPujasProducto > 30 && productosPujados.length < 10) {
+      fiabilidad -= 1;
+    } else if (mediaPujasProducto > 20 && productosPujados.length < 10) {
+      fiabilidad -= 0.5;
+    } else if (mediaPujasProducto > 10 && productosPujados.length < 10) {
+      fiabilidad -= 0.1;
+    }
+
+    if (fiabilidad < 0) {
+      fiabilidad = 0;
+    } else if (fiabilidad > 100) {
+      fiabilidad = 100;
     }
 
     usuario.fiabilidad = fiabilidad;
