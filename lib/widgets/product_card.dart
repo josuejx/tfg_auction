@@ -27,6 +27,11 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (producto.id == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return InkWell(
       onTap: () {
         Get.to(() => ProductScreen(producto: producto),

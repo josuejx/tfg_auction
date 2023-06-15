@@ -98,7 +98,7 @@ class DBProducto {
 
     final id = doc.id;
 
-    final storageRef = FirebaseStorage.instance.ref('usuarios');
+    final storageRef = FirebaseStorage.instance.ref('productos');
 
     if (image.path != "") {
       await storageRef.child(id).putFile(image);
@@ -110,12 +110,12 @@ class DBProducto {
   }
 
   Future<String> getImagen(Producto producto) async {
-    final storageRef = FirebaseStorage.instance.ref('productos');
+    //final storageRef = FirebaseStorage.instance.ref('productos');
+//
+    //final url =
+    //    await storageRef.child(producto.imagen.toString()).getDownloadURL();
 
-    final url =
-        await storageRef.child(producto.imagen.toString()).getDownloadURL();
-
-    return url;
+    return producto.imagen.toString();
   }
 
   Future pagar(Producto producto) async {

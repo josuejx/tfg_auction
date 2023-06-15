@@ -20,7 +20,7 @@ class Usuario {
         nombreCompleto: json["nombreCompleto"],
         email: json["email"],
         token: json["token"],
-        fiabilidad: json["fiabilidad"],
+        fiabilidad: json["fiabilidad"].toDouble(),
         subastasGanadasNoPagadas: json["subastasGanadas"],
       );
 

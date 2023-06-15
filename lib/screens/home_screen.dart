@@ -154,7 +154,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
         elevation: 0,
-        backgroundColor: Colors.transparent,
       ),
       floatingActionButton: AnimatedBuilder(
         animation: _fabAnimationController,

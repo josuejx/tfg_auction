@@ -64,7 +64,6 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.light,
         appBarTheme: const AppBarTheme(
           color: Colors.white,

@@ -27,8 +27,7 @@ class Producto {
     nombre = json['nombre'];
     descripcion = json['descripcion'];
     precio = json['precio'].toDouble();
-    finalizacion = DateTime.fromMillisecondsSinceEpoch(
-        json['finalizacion'].seconds * 1000);
+    finalizacion = DateTime.parse(json['finalizacion']);
     idCategoria = json['idCategoria'];
     idUsuario = json['idUsuario'];
     imagen = json['imagen'];

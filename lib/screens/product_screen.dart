@@ -80,7 +80,9 @@ class _ProductScreenState extends State<ProductScreen> {
                 child: Hero(
                   tag: 'P${widget.producto.id.toString()}',
                   child: FutureBuilder(
-                    future: dbProducto.getImagen(widget.producto),
+                    future: widget.producto.imagen != null
+                        ? dbProducto.getImagen(widget.producto)
+                        : null,
                     builder: (context, AsyncSnapshot<String> snapshot) {
                       if (snapshot.hasData) {
                         return Image.network(
@@ -211,7 +213,7 @@ class _ProductScreenState extends State<ProductScreen> {
                             return;
                           }
                           double ultimaPuja = 0;
-                          if (pujas != []) {
+                          if (pujas.isNotEmpty) {
                             ultimaPuja = pujas.first.cantidad!;
                           } else {
                             ultimaPuja = widget.producto.precio!;

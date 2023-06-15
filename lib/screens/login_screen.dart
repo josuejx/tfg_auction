@@ -119,48 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: const Text('Iniciar Sesión'),
             ),
-            if (!GetPlatform.isIOS) const SizedBox(height: 10),
-            if (!GetPlatform.isIOS)
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 10.0),
-                      child: const Divider(
-                        color: Colors.black,
-                        height: 36,
-                      ),
-                    ),
-                  ),
-                  const Text('O'),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 10.0),
-                      child: const Divider(
-                        color: Colors.black,
-                        height: 36,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            const SizedBox(height: 10),
-            if (!GetPlatform.isIOS)
-              ElevatedButton.icon(
-                  onPressed: () async {
-                    await Auth().googleSignIn();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
-                    onPrimary: Colors.black,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  icon:
-                      const FaIcon(FontAwesomeIcons.google, color: Colors.red),
-                  label: const Text('Iniciar sesión con Google')),
             const SizedBox(height: 30),
             TextButton(
               onPressed: () {

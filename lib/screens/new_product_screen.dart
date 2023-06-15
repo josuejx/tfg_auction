@@ -79,21 +79,16 @@ class _NewProductScreenState extends State<NewProductScreen> {
                         colorText: Colors.white, backgroundColor: Colors.red);
                   } else {
                     Usuario usuario = await DBUsuario()
-                        .read((Auth().currentUser as User).uid);
-                    //producto.idUsuario = usuario.id;
-                    String result = await DBProducto().create(producto, image);
-                    if (result == '') {
-                      producto = (await DBProducto().readByUserAndName(
-                          producto.idUsuario!, producto.nombre!));
-                      Get.off(() => ProductScreen(producto: producto));
-                      Get.snackbar(
-                          'Producto creado', 'Producto creado correctamente',
-                          colorText: Colors.white,
-                          backgroundColor: Colors.green);
-                    } else {
-                      Get.snackbar('Error', 'Ha ocurrido un error',
-                          colorText: Colors.white, backgroundColor: Colors.red);
-                    }
+                        .read((Auth().currentUser as User).email!);
+                    producto.idUsuario = usuario.email;
+                    producto.id = DateTime.now().millisecondsSinceEpoch;
+                    await DBProducto().create(producto, image);
+                    producto = (await DBProducto()
+                        .readByUserAndName(usuario.email!, producto.nombre!));
+                    Get.off(() => ProductScreen(producto: producto));
+                    Get.snackbar(
+                        'Producto creado', 'Producto creado correctamente',
+                        colorText: Colors.white, backgroundColor: Colors.green);
                   }
                 },
                 style: ElevatedButton.styleFrom(
