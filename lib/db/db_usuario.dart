@@ -102,13 +102,18 @@ class DBUsuario {
 
     if (usuario.subastasGanadasNoPagadas! > 0) {
       fiabilidad -= 5 * usuario.subastasGanadasNoPagadas!;
-    } else if (productosPagados.isNotEmpty) {
+    }
+    if (productosPagados.isNotEmpty) {
       fiabilidad += 3 * productosPagados.length;
-    } else if (productosGanados.isNotEmpty) {
+    }
+    if (productosGanados.isNotEmpty) {
       fiabilidad += 1 * productosGanados.length;
-    } else if (productosPujados.isNotEmpty) {
+    }
+    if (productosPujados.isNotEmpty) {
       fiabilidad += 0.1 * productosPujados.length;
-    } else if (mediaPujasProducto > 30 && productosPujados.length < 10) {
+    }
+
+    if (mediaPujasProducto > 30 && productosPujados.length < 10) {
       fiabilidad -= 1;
     } else if (mediaPujasProducto > 20 && productosPujados.length < 10) {
       fiabilidad -= 0.5;

@@ -7,20 +7,27 @@ import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/puja.dart';
 
-class BiddingScreen extends StatelessWidget {
+class BiddingScreen extends StatefulWidget {
   Producto producto;
   double ultimaPuja = 0;
 
   BiddingScreen({Key? key, required this.producto, required this.ultimaPuja})
       : super(key: key);
 
+  @override
+  State<BiddingScreen> createState() => _BiddingScreenState();
+}
+
+class _BiddingScreenState extends State<BiddingScreen> {
   final TextEditingController _cantidadController = TextEditingController();
+
+  bool _pujaAutomatica = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(producto.nombre!),
+          title: Text(widget.producto.nombre!),
           centerTitle: true,
           elevation: 0,
         ),
@@ -43,7 +50,7 @@ class BiddingScreen extends StatelessWidget {
                     Align(
                       alignment: Alignment.center,
                       child: Text(
-                        '${ultimaPuja.toString()} €',
+                        '${widget.ultimaPuja.toString()} €',
                         style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -68,6 +75,34 @@ class BiddingScreen extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       controller: _cantidadController,
                     ),
+                    // Puja automática
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Puja automática',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('No'),
+                          Switch(
+                            value: _pujaAutomatica,
+                            onChanged: (value) {
+                              setState(() {
+                                _pujaAutomatica = value;
+                              });
+                            },
+                          ),
+                          const Text('Sí'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -85,20 +120,22 @@ class BiddingScreen extends StatelessWidget {
 
                     if (cantidad > 300 && usuario.fiabilidad! < 50) {
                       Get.snackbar('Error',
-                          'No puedes pujar porque tu fiabilidad es menor que 50%',
+                          'No puedes pujar porque tu fiabilidad es baja',
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: Colors.red,
                           colorText: Colors.white);
                       return;
                     }
 
-                    if (cantidad > producto.precio! && cantidad > ultimaPuja) {
-                      producto.precio = cantidad;
+                    if (cantidad > widget.producto.precio! &&
+                        cantidad > widget.ultimaPuja) {
+                      widget.producto.precio = cantidad;
                       Puja puja = Puja(
-                        idProducto: producto.id,
+                        idProducto: widget.producto.id,
                         idUsuario: usuario.email,
                         fecha: DateTime.now(),
                         cantidad: cantidad,
+                        pujaAutomatica: _pujaAutomatica,
                       );
                       await DBPuja().save(puja);
                       Get.back();

@@ -33,7 +33,7 @@ class _SavedContentState extends State<SavedContent> {
 
   void cargarDatos() async {
     if (Auth().currentUser != null) {
-      usuario = await DBUsuario().read((Auth().currentUser as User).uid);
+      usuario = await DBUsuario().read((Auth().currentUser as User).email!);
       DBArchivado dbArchivado = DBArchivado();
       List<Archivado> archivados = await dbArchivado.readByUser(usuario!);
       for (var item in archivados) {
