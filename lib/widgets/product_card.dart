@@ -27,6 +27,11 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (producto.id == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return InkWell(
       onTap: () {
         Get.to(() => ProductScreen(producto: producto),
@@ -44,31 +49,22 @@ class ProductCard extends StatelessWidget {
                           topLeft: Radius.circular(15),
                           topRight: Radius.circular(15)),
                       child: Hero(
-                        tag: 'P${producto.id!.toString()}',
-                        child: Image.network(
-                          dbProducto.getImagen(producto.id!),
-                          fit: BoxFit.cover,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
-                          errorBuilder: (BuildContext context, Object exception,
-                              StackTrace? stackTrace) {
-                            return const Center(
-                              child: Text('Error al cargar la imagen'),
-                            );
-                          },
-                        ),
-                      ))),
+                          tag: 'P${producto.id!.toString()}',
+                          child: FutureBuilder(
+                            future: dbProducto.getImagen(producto),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Image.network(
+                                  snapshot.data!,
+                                  fit: BoxFit.cover,
+                                );
+                              } else {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            },
+                          )))),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(

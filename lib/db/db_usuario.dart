@@ -1,126 +1,134 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:tfg_auction/db/db_general.dart';
-import 'package:tfg_auction/db/env.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/db/db_puja.dart';
+import 'package:tfg_auction/models/producto.dart';
+import 'package:tfg_auction/models/puja.dart';
 import 'package:tfg_auction/models/usuario.dart';
-import 'package:http/http.dart' as http;
 
 class DBUsuario {
   Future<List<Usuario>> readAll() async {
-    try {
-      final response = await http.get(Uri.parse("${Env.base_url}/usuario"));
+    final docUser = FirebaseFirestore.instance.collection('usuarios').get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List<Usuario> usuarios = [];
-        for (var item in json.decode(response.body)) {
-          usuarios.add(Usuario.fromJson(item));
+    final doc = await docUser;
+
+    final usuarios = <Usuario>[];
+
+    doc.docs.forEach((element) {
+      usuarios.add(Usuario.fromJson(element.data()));
+    });
+
+    return usuarios;
+  }
+
+  Future<Usuario> read(String email) async {
+    final docUser =
+        FirebaseFirestore.instance.collection('usuarios').doc(email).get();
+
+    final doc = await docUser;
+
+    if (doc.exists) {
+      return Usuario.fromJson(doc.data()!);
+    } else {
+      return Usuario();
+    }
+  }
+
+  Future save(Usuario usuario, File image) async {
+    final docUser = FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc('${usuario.email}');
+
+    await docUser.set(usuario.toJson());
+
+    final storageRef = FirebaseStorage.instance.ref('usuarios');
+
+    if (image.path != "") {
+      await storageRef.child('${usuario.email}').putFile(image);
+    }
+  }
+
+  Future delete(Usuario usuario) async {
+    final docUser = FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc('${usuario.email}');
+
+    await docUser.delete();
+
+    final storageRef = FirebaseStorage.instance.ref('usuarios');
+
+    await storageRef.child('${usuario.email}').delete();
+  }
+
+  Future<String> getImage(Usuario usuario) async {
+    final storageRef = FirebaseStorage.instance.ref('usuarios');
+    return await storageRef.child('${usuario.email}').getDownloadURL();
+  }
+
+  Future puntuacionUsuario(Usuario usuario) async {
+    List<Puja> pujasUsuario = await DBPuja().readAllByUser(usuario);
+
+    List<Producto> productosPujados = [];
+    for (Puja puja in pujasUsuario) {
+      productosPujados.add(await DBProducto().read(puja.idProducto!));
+    }
+
+    List<Producto> productosGanados = [];
+    for (Producto producto in productosPujados) {
+      var pujasProducto = pujasUsuario
+          .where((element) => element.idProducto == producto.id)
+          .toList();
+      if (pujasProducto.length > 0) {
+        var pujaMaxima = pujasProducto.reduce((value, element) =>
+            value.cantidad! > element.cantidad! ? value : element);
+        if (pujaMaxima.idUsuario == usuario.email) {
+          productosGanados.add(producto);
         }
-        return usuarios;
-      } else {
-        return [];
       }
-    } catch (e) {
-      return [];
     }
-  }
 
-  Future<Usuario?> read(int id) async {
-    try {
-      final response =
-          await http.get(Uri.parse("${Env.base_url}/usuario/id/$id"));
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Usuario.fromJson(json.decode(response.body)[0]);
-      } else {
-        return null;
+    List<Producto> productosPagados = [];
+    for (Producto producto in productosGanados) {
+      bool pagado = await DBProducto().isPagado(producto);
+      if (pagado) {
+        productosPagados.add(producto);
       }
-    } catch (e) {
-      return null;
     }
-  }
 
-  Future<Usuario?> readByEmail(String email) async {
-    try {
-      final response =
-          await http.get(Uri.parse("${Env.base_url}/usuario/email/$email"));
+    double fiabilidad = usuario.fiabilidad!;
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final usuario = Usuario.fromJson(json.decode(response.body)[0]);
-        return usuario;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print(e);
-      return null;
+    double mediaPujasProducto = pujasUsuario.length / productosPujados.length;
+
+    if (usuario.subastasGanadasNoPagadas! > 0) {
+      fiabilidad -= 5 * usuario.subastasGanadasNoPagadas!;
     }
-  }
-
-  Future<String> create(Usuario usuario, File image) async {
-    try {
-      HttpClient httpClient = HttpClient();
-      HttpClientRequest request =
-          await httpClient.postUrl(Uri.parse("${Env.base_url}/usuario"));
-
-      request.headers.set('Accept', 'application/json');
-      request.headers.set('Content-type', 'application/json');
-      request.add(utf8.encode(json.encode(usuario.toJson())));
-
-      HttpClientResponse response = await request.close();
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (image.path != "") {
-          usuario = (await readByEmail(usuario.email!))!;
-          await DBGeneral.uploadImage(image, 'U${usuario.id.toString()}');
-        }
-        return "";
-      } else if (response.statusCode == 400) {
-        return "Compruebe que el email que está intentando registrar no está ya en uso";
-      } else {
-        return "Error de conexión con el servidor";
-      }
-    } catch (e) {
-      print(e);
-      return "Error de conexión con el servidor";
+    if (productosPagados.isNotEmpty) {
+      fiabilidad += 3 * productosPagados.length;
     }
-  }
-
-  Future<Usuario?> update(Usuario usuario) async {
-    try {
-      final response = await http.put(
-        Uri.parse("${Env.base_url}/usuario/${usuario.id}"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(usuario.toJson()),
-      );
-
-      if (response.statusCode == 200) {
-        return Usuario.fromJson(json.decode(response.body));
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return null;
+    if (productosGanados.isNotEmpty) {
+      fiabilidad += 1 * productosGanados.length;
     }
-  }
-
-  Future<bool> delete(int id) async {
-    try {
-      final response =
-          await http.delete(Uri.parse("${Env.base_url}/usuario/$id"));
-
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
+    if (productosPujados.isNotEmpty) {
+      fiabilidad += 0.1 * productosPujados.length;
     }
-  }
 
-  String getImage(int idUsuario) {
-    return "${Env.base_url}/image/U${idUsuario.toString()}";
+    if (mediaPujasProducto > 30 && productosPujados.length < 10) {
+      fiabilidad -= 1;
+    } else if (mediaPujasProducto > 20 && productosPujados.length < 10) {
+      fiabilidad -= 0.5;
+    } else if (mediaPujasProducto > 10 && productosPujados.length < 10) {
+      fiabilidad -= 0.1;
+    }
+
+    if (fiabilidad < 0) {
+      fiabilidad = 0;
+    } else if (fiabilidad > 100) {
+      fiabilidad = 100;
+    }
+
+    usuario.fiabilidad = fiabilidad;
+
+    await save(usuario, File(""));
   }
 }

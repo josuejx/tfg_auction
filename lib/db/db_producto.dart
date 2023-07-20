@@ -1,134 +1,175 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:http/http.dart' as http;
-import 'package:tfg_auction/db/db_general.dart';
-import 'package:tfg_auction/db/env.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tfg_auction/db/db_puja.dart';
 import 'package:tfg_auction/models/producto.dart';
+import 'package:tfg_auction/models/usuario.dart';
 
 class DBProducto {
   Future<List<Producto>> readAll() async {
-    try {
-      final response = await http.get(Uri.parse("${Env.base_url}/producto"));
+    final docProducto =
+        FirebaseFirestore.instance.collection('productos').get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List<Producto> productos = [];
-        for (var item in json.decode(response.body)) {
-          productos.add(Producto.fromJson(item));
-        }
-        return productos;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+    final doc = await docProducto;
+
+    final productos = <Producto>[];
+
+    doc.docs.forEach((element) {
+      productos.add(Producto.fromJson(element.data()));
+    });
+
+    return productos;
   }
 
-  Future<List<Producto>> readByUser(int idUsuario) async {
-    try {
-      final response = await http
-          .get(Uri.parse("${Env.base_url}/producto/idUsuario/$idUsuario"));
+  Future<List<Producto>> readByUser(Usuario usuario) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('idUsuario', isEqualTo: usuario.email)
+        .get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List<Producto> productos = [];
-        for (var item in json.decode(response.body)) {
-          productos.add(Producto.fromJson(item));
-        }
-        return productos;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+    final doc = await docProducto;
+
+    final productos = <Producto>[];
+
+    doc.docs.forEach((element) {
+      productos.add(Producto.fromJson(element.data()));
+    });
+
+    return productos;
   }
 
-  Future<List<String>> readByQuery(String filtroNombre) async {
-    try {
-      var productos = await readAll();
-      List<String> nombres = [];
-      if (filtroNombre != '') {
-        for (var producto in productos) {
-          if (producto.nombre!
-              .toLowerCase()
-              .contains(filtroNombre.toLowerCase())) {
-            nombres.add(producto.nombre!);
-          }
-        }
-        return nombres;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print(e);
-      return [];
-    }
+  Future<List<String>> readByQuery(String nombreProducto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('nombre', whereIn: [nombreProducto]).get();
+
+    final doc = await docProducto;
+
+    final productos = <String>[];
+
+    doc.docs.forEach((element) {
+      productos.add(element.data()['nombre']);
+    });
+
+    return productos;
   }
 
   Future<Producto> read(int idProducto) async {
-    try {
-      final response =
-          await http.get(Uri.parse("${Env.base_url}/producto/id/$idProducto"));
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('id', isEqualTo: idProducto)
+        .get();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Producto.fromJson(json.decode(response.body)[0]);
-      } else {
-        return Producto();
-      }
-    } catch (e) {
-      print(e);
-      return Producto();
-    }
+    final doc = await docProducto;
+
+    final productos = <Producto>[];
+
+    doc.docs.forEach((element) {
+      productos.add(Producto.fromJson(element.data()));
+    });
+
+    return productos[0];
   }
 
   Future<Producto> readByUserAndName(
-      int idUsuario, String nombreProducto) async {
-    try {
-      List<Producto> productos = await readByUser(idUsuario);
-      for (var producto in productos) {
-        if (producto.nombre == nombreProducto) {
-          return producto;
-        }
-      }
-      return Producto();
-    } catch (e) {
-      print(e);
-      return Producto();
+      String idUsuario, String nombreProducto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('idUsuario', isEqualTo: idUsuario)
+        .where('nombre', isEqualTo: nombreProducto)
+        .get();
+
+    final doc = await docProducto;
+
+    final productos = <Producto>[];
+
+    doc.docs.forEach((element) {
+      productos.add(Producto.fromJson(element.data()));
+    });
+
+    return productos[0];
+  }
+
+  Future create(Producto producto, File image) async {
+    final docProducto = FirebaseFirestore.instance.collection('productos');
+
+    final doc = await docProducto.add(producto.toJson());
+
+    final id = doc.id;
+
+    final storageRef = FirebaseStorage.instance.ref('productos');
+
+    if (image.path != "") {
+      await storageRef.child(id).putFile(image);
+
+      final url = await storageRef.child(id).getDownloadURL();
+
+      await docProducto.doc(id).update({'imagen': url});
     }
   }
 
-  Future<String> create(Producto producto, File image) async {
-    try {
-      HttpClient httpClient = HttpClient();
-      HttpClientRequest request =
-          await httpClient.postUrl(Uri.parse("${Env.base_url}/producto"));
+  Future<String> getImagen(Producto producto) async {
+    //final storageRef = FirebaseStorage.instance.ref('productos');
+//
+    //final url =
+    //    await storageRef.child(producto.imagen.toString()).getDownloadURL();
 
-      request.headers.set('Accept', 'application/json');
-      request.headers.set('Content-type', 'application/json');
-      request.add(utf8.encode(json.encode(producto.toJson())));
-
-      HttpClientResponse response = await request.close();
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (image.path != "") {
-          producto =
-              (await readByUserAndName(producto.idUsuario!, producto.nombre!));
-          await DBGeneral.uploadImage(image, 'P${producto.id.toString()}');
-        }
-        return "";
-      } else {
-        return "Fallo al crear el producto";
-      }
-    } catch (e) {
-      print(e);
-      return "Error de conexión con el servidor";
-    }
+    return producto.imagen.toString();
   }
 
-  String getImagen(int idProducto) {
-    return "${Env.base_url}/image/P${idProducto.toString()}";
+  Future pagar(Producto producto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('id', isEqualTo: producto.id)
+        .get();
+
+    final doc = await docProducto;
+
+    doc.docs.forEach((element) {
+      FirebaseFirestore.instance
+          .collection('productos')
+          .doc(element.id)
+          .update({'pagado': true});
+    });
+  }
+
+  Future<bool> isPagado(Producto producto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('id', isEqualTo: producto.id)
+        .get();
+
+    final doc = await docProducto;
+
+    final productos = <bool>[];
+
+    doc.docs.forEach((element) {
+      if (element.data()['pagado'] != null) {
+        productos.add(element.data()['pagado']);
+      }
+    });
+
+    bool pagado = productos.isEmpty ? false : productos[0];
+
+    return pagado;
+  }
+
+  Future delete(Producto producto) async {
+    final docProducto = FirebaseFirestore.instance
+        .collection('productos')
+        .where('id', isEqualTo: producto.id)
+        .get();
+
+    final doc = await docProducto;
+
+    await DBPuja().deleteByProducto(producto.id!);
+
+    doc.docs.forEach((element) {
+      FirebaseFirestore.instance
+          .collection('productos')
+          .doc(element.id)
+          .delete();
+    });
   }
 }

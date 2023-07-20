@@ -5,10 +5,11 @@ class Producto {
   String? descripcion;
   double? precio;
   DateTime? finalizacion;
+  String? imagen;
 
   // Relaciones
   int? idCategoria;
-  int? idUsuario;
+  String? idUsuario;
 
   Producto({
     this.id,
@@ -16,6 +17,9 @@ class Producto {
     this.descripcion,
     this.precio,
     this.finalizacion,
+    this.imagen,
+    this.idCategoria,
+    this.idUsuario,
   });
 
   Producto.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,7 @@ class Producto {
     finalizacion = DateTime.parse(json['finalizacion']);
     idCategoria = json['idCategoria'];
     idUsuario = json['idUsuario'];
+    imagen = json['imagen'];
   }
 
   Map<String, dynamic> toJson() {
@@ -37,6 +42,7 @@ class Producto {
     data['finalizacion'] = this.finalizacion.toString();
     data['idCategoria'] = this.idCategoria;
     data['idUsuario'] = this.idUsuario;
+    data['imagen'] = this.imagen;
     return data;
   }
 }

@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tfg_auction/auth.dart';
 import 'package:tfg_auction/db/db_puja.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/puja.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/request_login_screen.dart';
-import 'package:tfg_auction/session.dart';
 import 'package:tfg_auction/widgets/bid_card.dart';
 
 class BidContent extends StatefulWidget {
@@ -25,12 +27,22 @@ class _BidContentState extends State<BidContent> {
   }
 
   void cargarDatos() async {
-    // Obtener usuario
-    usuario = await Session().getSession();
-    if (usuario != null) {
-      // Obtener subastas
-      pujas = await DBPuja().readAllByUser(usuario!.id!);
+    if (Auth().currentUser != null) {
+      usuario = await DBUsuario().read((Auth().currentUser as User).email!);
+      pujas = await DBPuja().readAllByUser(usuario!);
+
+      // quitar pujas que sean del mismo idProducto
+      for (var i = 0; i < pujas.length; i++) {
+        for (var j = i + 1; j < pujas.length; j++) {
+          if (pujas[i].idProducto == pujas[j].idProducto) {
+            pujas.removeAt(j);
+            j--;
+          }
+        }
+      }
     }
+
+    pujas.sort((a, b) => b.cantidad!.compareTo(a.cantidad!));
     setState(() {
       cargando = false;
     });
@@ -45,7 +57,7 @@ class _BidContentState extends State<BidContent> {
     }
 
     if (usuario == null) {
-      return const RequestLoginScreen();
+      return RequestLoginScreen();
     } else if (pujas.isEmpty) {
       return const Center(
         child: Text("No tienes pujas"),

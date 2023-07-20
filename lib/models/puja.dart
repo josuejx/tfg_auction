@@ -2,9 +2,10 @@ class Puja {
   // Atributos
   double? cantidad;
   DateTime? fecha;
+  bool? pujaAutomatica;
 
   // Relaciones
-  int? idUsuario;
+  String? idUsuario;
   int? idProducto;
 
   // Constructor
@@ -13,6 +14,7 @@ class Puja {
     this.fecha,
     this.idUsuario,
     this.idProducto,
+    this.pujaAutomatica,
   });
 
   // toJson
@@ -22,6 +24,7 @@ class Puja {
       'fecha': fecha,
       'idUsuario': idUsuario,
       'idProducto': idProducto,
+      'pujaAutomatica': pujaAutomatica,
     };
   }
 
@@ -29,9 +32,10 @@ class Puja {
   factory Puja.fromJson(Map<String, dynamic> json) {
     return Puja(
       cantidad: json['cantidad'].toDouble(),
-      fecha: DateTime.parse(json['fecha']),
+      fecha: DateTime.fromMillisecondsSinceEpoch(json['fecha'].seconds * 1000),
       idUsuario: json['idUsuario'],
       idProducto: json['idProducto'],
+      pujaAutomatica: json['pujaAutomatica'],
     );
   }
 }

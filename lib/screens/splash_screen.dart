@@ -2,8 +2,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
-import 'package:tfg_auction/screens/login_screen.dart';
-import 'package:tfg_auction/session.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -22,8 +20,10 @@ class _SplashScreenState extends State<SplashScreen> {
       setState(() {
         _loading = false;
       });
+
       Future.delayed(const Duration(seconds: 1), () {
-        Get.offAll(() => HomeScreen());
+        Get.offAll(() => HomeScreen(),
+            transition: Transition.zoom, duration: const Duration(seconds: 1));
       });
     });
   }
@@ -31,19 +31,20 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Center(
-          child: Hero(
-              tag: 'logo', child: Image.asset('assets/logo.png', height: 70)),
-        ),
-        const SizedBox(height: 20),
-        if (_loading)
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
-        if (!_loading)
-          FadeOut(child: const Center(child: CircularProgressIndicator()))
-      ]),
-    );
+        body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Center(
+        child: Hero(
+            tag: 'logo', child: Image.asset('assets/logo.png', height: 70)),
+      ),
+      AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        height: _loading ? 20 : 0,
+      ),
+      _loading
+          ? const CircularProgressIndicator()
+          : FadeOut(
+              duration: const Duration(milliseconds: 400),
+              child: const Center(child: CircularProgressIndicator()))
+    ]));
   }
 }

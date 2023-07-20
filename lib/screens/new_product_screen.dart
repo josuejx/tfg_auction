@@ -2,16 +2,18 @@ import 'dart:io';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
 import 'package:tfg_auction/db/db_producto.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/models/producto.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/product_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 
 class NewProductScreen extends StatefulWidget {
   const NewProductScreen({Key? key}) : super(key: key);
@@ -38,6 +40,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
 
   void cargarDatos() async {
     categorias = await DBCategoria().readAll();
+    setState(() {});
   }
 
   @override
@@ -75,21 +78,17 @@ class _NewProductScreenState extends State<NewProductScreen> {
                     Get.snackbar('Error', 'Debes rellenar todos los campos',
                         colorText: Colors.white, backgroundColor: Colors.red);
                   } else {
-                    Usuario usuario = (await Session().getSession())!;
-                    producto.idUsuario = usuario.id;
-                    String result = await DBProducto().create(producto, image);
-                    if (result == '') {
-                      producto = (await DBProducto().readByUserAndName(
-                          producto.idUsuario!, producto.nombre!));
-                      Get.off(() => ProductScreen(producto: producto));
-                      Get.snackbar(
-                          'Producto creado', 'Producto creado correctamente',
-                          colorText: Colors.white,
-                          backgroundColor: Colors.green);
-                    } else {
-                      Get.snackbar('Error', 'Ha ocurrido un error',
-                          colorText: Colors.white, backgroundColor: Colors.red);
-                    }
+                    Usuario usuario = await DBUsuario()
+                        .read((Auth().currentUser as User).email!);
+                    producto.idUsuario = usuario.email;
+                    producto.id = DateTime.now().millisecondsSinceEpoch;
+                    await DBProducto().create(producto, image);
+                    producto = (await DBProducto()
+                        .readByUserAndName(usuario.email!, producto.nombre!));
+                    Get.off(() => ProductScreen(producto: producto));
+                    Get.snackbar(
+                        'Producto creado', 'Producto creado correctamente',
+                        colorText: Colors.white, backgroundColor: Colors.green);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -111,6 +110,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
 
   List<Widget> _buildFormProduct() {
     return [
+      const SizedBox(height: 20.0),
       // Imagen
       InkWell(
         onTap: () async {

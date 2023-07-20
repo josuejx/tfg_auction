@@ -2,14 +2,18 @@ import 'package:animate_do/animate_do.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_categoria.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/categoria.dart';
 import 'package:tfg_auction/screens/home_screens_content/bid_content.dart';
 import 'package:tfg_auction/screens/new_product_screen.dart';
 import 'package:tfg_auction/screens/profile_screen.dart';
+import 'package:tfg_auction/screens/request_login_screen.dart';
+import 'package:tfg_auction/auth.dart';
 import 'package:tfg_auction/widgets/layout/auction_appbar.dart';
 import 'package:tfg_auction/widgets/layout/my_search_delegate.dart';
 
@@ -17,7 +21,9 @@ import 'home_screens_content/home_content.dart';
 import 'home_screens_content/saved_content.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  int index = 0;
+
+  HomeScreen({Key? key, this.index = 0}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -62,6 +68,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
+    _hideBottomBarAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _hideBottomBarAnimationController.forward();
+
+    _bottomNavIndex = widget.index;
+
     _fabAnimationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -84,11 +98,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       borderRadiusCurve,
     );
 
-    _hideBottomBarAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => _hideBottomBarAnimationController.reverse(),
     );
-
     Future.delayed(
       const Duration(seconds: 1),
       () => _fabAnimationController.forward(),
@@ -141,18 +154,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
         elevation: 0,
-        backgroundColor: Colors.transparent,
       ),
-      //bottomNavigationBar: AuctiOnBottomBar(),
       floatingActionButton: AnimatedBuilder(
         animation: _fabAnimationController,
         builder: (context, child) => CircularRevealAnimation(
           animation: fabAnimation,
           centerAlignment: Alignment.bottomCenter,
           child: FloatingActionButton(
-              onPressed: () {
-                Get.to(() => const NewProductScreen(),
-                    transition: Transition.downToUp);
+              onPressed: () async {
+                var user = Auth().currentUser;
+                if (Auth().currentUser != null) {
+                  var usuario = await DBUsuario()
+                      .read((Auth().currentUser as User).email!);
+                  Get.to(() => const NewProductScreen(),
+                      transition: Transition.downToUp);
+                } else {
+                  Get.to(
+                      () => Scaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              icon: const Icon(Icons.clear),
+                            ),
+                            elevation: 0,
+                          ),
+                          body: RequestLoginScreen(
+                            getOff: true,
+                          )),
+                      transition: Transition.downToUp);
+                }
               },
               child: Container(
                 height: 50,

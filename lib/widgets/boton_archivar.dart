@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_archivado.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/archivado.dart';
 import 'package:tfg_auction/models/usuario.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/screens/home_screen.dart';
+import 'package:tfg_auction/auth.dart';
 
 class BotonArchivar extends StatefulWidget {
   int idProducto;
@@ -26,16 +29,18 @@ class _BotonArchivarState extends State<BotonArchivar> {
   }
 
   void cargarUsuario() async {
-    Usuario? usuario = await Session().getSession();
+    if (Auth().currentUser != null) {
+      User user = Auth().currentUser as User;
+      var usuario = await DBUsuario().read((Auth().currentUser as User).email!);
 
-    if (usuario != null) {
-      Archivado archivado = await DBArchivado().readByUserAndProduct(
-        usuario.id!,
+      Archivado archivado = await DBArchivado().read(
+        usuario.email!,
         widget.idProducto,
       );
       setState(() {
-        _archivadoModel.idUsuario = usuario.id;
-        _archivado = archivado.id != null;
+        _archivadoModel.idUsuario = usuario.email;
+        _archivado =
+            archivado.idProducto != null && archivado.idUsuario != null;
         _logged = true;
       });
     }
@@ -52,18 +57,16 @@ class _BotonArchivarState extends State<BotonArchivar> {
             onPressed: () async {
               _archivado = !_archivado;
               if (_archivado) {
-                String result = await DBArchivado().create(_archivadoModel);
-                if (result != "") {
-                  Get.snackbar('Error al archivar el producto', result,
-                      backgroundColor: Colors.red, colorText: Colors.white);
-                  return;
-                }
+                await DBArchivado().create(_archivadoModel);
               } else {
-                _archivadoModel = await DBArchivado().readByUserAndProduct(
+                _archivadoModel = await DBArchivado().read(
                   _archivadoModel.idUsuario!,
                   _archivadoModel.idProducto!,
                 );
-                await DBArchivado().delete(_archivadoModel.id!);
+                await DBArchivado().delete(_archivadoModel);
+                Get.offAll(() => HomeScreen(index: 1),
+                    transition: Transition.fadeIn,
+                    duration: const Duration(milliseconds: 500));
               }
               setState(() {
                 Get.rawSnackbar(

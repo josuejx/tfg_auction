@@ -1,8 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/usuario.dart';
 import 'package:tfg_auction/screens/home_screen.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/screens/password_recovery_screen.dart';
+import 'package:tfg_auction/screens/register_screen.dart';
+import 'package:tfg_auction/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -74,22 +80,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 setState(() {
                   _loading = true;
                 });
-                bool test = await Session()
-                    .login(_emailController.text, _passwordController.text);
-                if (test) {
-                  Usuario? usuario = await Session().getSession();
+
+                try {
+                  Get.dialog(
+                    const AlertDialog(
+                      content: Text('Iniciando sesión...'),
+                    ),
+                    barrierDismissible: false,
+                  );
+                  await Auth().signInWithEmailAndPassword(
+                      email: _emailController.text,
+                      password: _passwordController.text);
+
+                  Usuario usuario =
+                      await DBUsuario().read(_emailController.text);
+                  await DBUsuario().puntuacionUsuario(usuario);
+
+                  Get.offAll(() => HomeScreen(), transition: Transition.fade);
                   Get.snackbar(
-                      'Login', 'Bienvenido de nuevo ${usuario!.nombreUsuario}',
-                      snackPosition: SnackPosition.TOP,
+                      'Bienvenido', 'Has iniciado sesión correctamente',
+                      snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: Colors.green,
                       colorText: Colors.white);
-                  Get.offAll(() => HomeScreen());
-                } else {
-                  setState(() {
-                    _loading = false;
-                  });
-                  Get.snackbar('Login',
-                      'Error al iniciar sesión. Comprueba tus credenciales.',
+                } on FirebaseAuthException catch (e) {
+                  Get.back();
+                  Get.snackbar('Error', e.message!,
                       snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: Colors.red,
                       colorText: Colors.white);
@@ -97,23 +112,26 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               style: ElevatedButton.styleFrom(
                 fixedSize: Size(
-                    MediaQuery.of(context).size.width * 0.2 > 120
-                        ? MediaQuery.of(context).size.width * 0.2
+                    MediaQuery.of(context).size.width * 0.4 > 120
+                        ? MediaQuery.of(context).size.width * 0.4
                         : 120,
                     40),
               ),
-              child: _loading
-                  ? const CircularProgressIndicator()
-                  : const Text('Iniciar Sesión'),
+              child: const Text('Iniciar Sesión'),
             ),
             const SizedBox(height: 30),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => PasswordRecoveryScreen(),
+                    transition: Transition.fade);
+              },
               child: const Text('¿Olvidaste tu contraseña?'),
             ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => RegisterScreen(), transition: Transition.fade);
+              },
               child: const Text('¿No tienes cuenta? Regístrate'),
             ),
           ],

@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:tfg_auction/db/db_usuario.dart';
 import 'package:tfg_auction/models/usuario.dart';
-import 'package:tfg_auction/session.dart';
+import 'package:tfg_auction/auth.dart';
 
 import 'login_screen.dart';
 
@@ -52,11 +54,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   List<Widget> registerFormWidgets() {
     return [
+      const SizedBox(height: 10),
       InkWell(
         onTap: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
-            type: FileType.custom,
-            allowedExtensions: ['jpg', 'png', 'jpeg'],
+            type: FileType.image,
           );
           if (result != null) {
             setState(() {
@@ -177,17 +179,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
               nombreUsuario: _nombreUsuarioController.text,
               nombreCompleto: _nombreCompletoController.text,
               email: _emailController.text,
-              password: _passwordController.text);
+              fiabilidad: 50,
+              subastasGanadasNoPagadas: 0);
 
-          String test = await DBUsuario().create(usuario, _image);
-          if (test == "") {
+          try {
+            Get.dialog(const Center(child: CircularProgressIndicator()),
+                barrierDismissible: false);
+            await Auth().createUserWithEmailAndPassword(
+                email: usuario.email!, password: _passwordController.text);
+            await DBUsuario().save(usuario, _image);
+            Get.back();
             Get.snackbar("Registro completado",
                 "Usuario creado correctamente, ya puede iniciar sesión",
                 backgroundColor: Colors.green, colorText: Colors.white);
             Get.off(() => LoginScreen());
-          } else {
-            Get.snackbar("Erro al crear el usuario", test,
+          } on FirebaseAuthException catch (e) {
+            Get.snackbar('Error', e.message!,
                 backgroundColor: Colors.red, colorText: Colors.white);
+          } catch (e) {
+            Get.snackbar("Error", "Error al crear el usuario",
+                backgroundColor: Colors.red, colorText: Colors.white);
+            return;
           }
         },
         child: const Text('Registrarse'),

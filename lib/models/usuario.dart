@@ -1,36 +1,40 @@
 class Usuario {
-  int? id;
   String? nombreUsuario;
   String? nombreCompleto;
   String? email;
-  String? password;
+  String? token;
+  double? fiabilidad;
+  int? subastasGanadasNoPagadas;
 
   Usuario({
-    this.id,
     this.nombreUsuario,
     this.nombreCompleto,
     this.email,
-    this.password,
+    this.token,
+    this.fiabilidad,
+    this.subastasGanadasNoPagadas,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
-        id: json["id"],
         nombreUsuario: json["nombreUsuario"],
         nombreCompleto: json["nombreCompleto"],
         email: json["email"],
-        password: json["passwd"].toString(),
+        token: json["token"],
+        fiabilidad: json["fiabilidad"].toDouble(),
+        subastasGanadasNoPagadas: json["subastasGanadas"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
         "nombreUsuario": nombreUsuario,
         "nombreCompleto": nombreCompleto,
         "email": email,
-        "passwd": password,
+        "token": token,
+        "fiabilidad": fiabilidad,
+        "subastasGanadas": subastasGanadasNoPagadas,
       };
 
   @override
   String toString() {
-    return 'Usuario{id: $id, nombreUsuario: $nombreUsuario, nombreCompleto: $nombreCompleto, email: $email, password: $password}';
+    return 'Usuario{nombreUsuario: $nombreUsuario, nombreCompleto: $nombreCompleto, email: $email}';
   }
 }
